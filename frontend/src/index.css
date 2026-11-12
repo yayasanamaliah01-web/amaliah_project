@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-maun-50: #ECFDF5;
+  --color-maun-100: #D1FAE5;
+  --color-maun-200: #A7F3D0;
+  --color-maun-500: #10A878;
+  --color-maun-600: #087A4F;
+  --color-maun-700: #0B5D3B;
+  --color-maun-800: #075B3A;
+  --color-maun-900: #06452D;
+}
+
+@layer base {
+  body {
+    @apply antialiased text-slate-900 bg-slate-50;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  }
+}
+
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area, .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .no-print, .no-print * {
+    display: none !important;
+  }
+  .no-print-bg {
+    background: transparent !important;
+  }
+}
+

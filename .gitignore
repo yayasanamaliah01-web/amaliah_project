@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+target/
+backend/target/
+payment gateway/target/
+dist/
+frontend/dist/
+build/
+coverage/
+frontend/coverage/
+
+# Archives & binaries
+*.zip
+*.jar
+*.war
+
+# Logs & temp files
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE & Editor
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
