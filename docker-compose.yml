@@ -1,0 +1,104 @@
+services:
+  # ==========================================
+  # 1. Grafana Loki - Log Aggregation System
+  # ==========================================
+  loki:
+    image: grafana/loki:3.0.0
+    container_name: maun-loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    restart: unless-stopped
+    networks:
+      - maun-network
+
+  # ==========================================
+  # 2. Promtail - Log Shipper & Collector
+  # ==========================================
+  promtail:
+    image: grafana/promtail:3.0.0
+    container_name: maun-promtail
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ./backend/logs:/var/log/app:ro
+      - ./payment gateway/logs:/var/log/app_bank:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    restart: unless-stopped
+    networks:
+      - maun-network
+
+  # ==========================================
+  # 3. Prometheus - Metrics Monitoring Engine
+  # ==========================================
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: maun-prometheus
+    ports:
+      - "9091:9090" # Port 9091 di host (Port 9090 digunakan Bank Simulator)
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    networks:
+      - maun-network
+
+  # ==========================================
+  # 4. Grafana - Visualization & Dashboards
+  # ==========================================
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: maun-grafana
+    ports:
+      - "3001:3000" # Port 3001 di host (Port 3000 digunakan Frontend React)
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - loki
+    restart: unless-stopped
+    networks:
+      - maun-network
+
+  # ==========================================
+  # 5. Jenkins - CI/CD Pipeline Automation
+  # ==========================================
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: maun-jenkins
+    ports:
+      - "8080:8080" # Jenkins Web Console
+      - "50000:50000" # Jenkins Agent Port
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+    networks:
+      - maun-network
+
+networks:
+  maun-network:
+    driver: bridge
+
+volumes:
+  loki_data:
+  prometheus_data:
+  grafana_data:
+  jenkins_data:
