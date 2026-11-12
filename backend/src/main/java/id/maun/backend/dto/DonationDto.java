@@ -57,6 +57,7 @@ public class DonationDto {
         private String qrisString;
         private String qrCodeUrl;
         private String vaNumber;
+        private String paymentUrl;
         private LocalDateTime paidAt;
         private LocalDateTime expiresAt;
         private LocalDateTime createdAt;

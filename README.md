@@ -54,3 +54,48 @@ docker-compose up -d
 | **Swagger UI** | `http://localhost:8081/swagger-ui.html` | Dokumentasi interaktif REST API MAUN |
 | **OpenAPI Docs** | `http://localhost:8081/v3/api-docs` | Raw OpenAPI v3 JSON spec |
 | **Backend Actuator** | `http://localhost:8081/actuator/prometheus` | Spring Boot metrics endpoint |
+
+---
+
+## Payment Gateway: Xendit Integration & Simulation
+
+Platform MAUN mendukung integrasi resmi dengan **Xendit Payment Gateway** (QRIS Dinamis, Virtual Account, & Checkout Invoice) serta mode dual fallback ke simulator internal.
+
+### 1. Keamanan Kredensial (Secret Security)
+Kunci rahasia API Xendit disimpan secara aman menggunakan file environment variable `.env` (diabaikan oleh git melalui `.gitignore`).
+File `.env.example` disediakan sebagai acuan konfigurasi:
+```env
+PAYMENT_GATEWAY_PROVIDER=xendit
+XENDIT_SECRET_KEY=xnd_development_...
+XENDIT_API_URL=https://api.xendit.co
+XENDIT_WEBHOOK_TOKEN=amaliah_xendit_webhook_token_2026
+XENDIT_SIMULATION_ENABLED=true
+```
+
+### 2. Endpoints Webhook Xendit
+- `POST /api/v1/xendit/callback/qr` : Webhook notifikasi pembayaran QRIS Xendit
+- `POST /api/v1/xendit/callback/va` : Webhook notifikasi Virtual Account Xendit (BSI, BCA, Mandiri, BRI, BNI)
+- `POST /api/v1/xendit/callback/invoice` : Webhook notifikasi Invoice Checkout Xendit
+
+### 3. Simulasi Pembayaran Sandbox (Developer / QA)
+Untuk menguji alur pembayaran tanpa harus transfer uang riil:
+
+#### A. Simulasi Pembayaran QRIS
+```bash
+curl -X POST http://localhost:8081/api/v1/xendit/simulate/qr-payment \
+  -H "Content-Type: application/json" \
+  -d '{"transactionId": "DON-1794468637540-7CF8", "amount": 50000}'
+```
+
+#### B. Simulasi Pembayaran Virtual Account
+```bash
+curl -X POST http://localhost:8081/api/v1/xendit/simulate/va-payment \
+  -H "Content-Type: application/json" \
+  -d '{"transactionId": "DON-1794468637523-DFB2", "amount": 100000}'
+```
+Ketika endpoint simulasi dipanggil, sistem secara otomatis:
+1. Memperbarui status donasi menjadi `SUCCESS` dan mencatat waktu bayar.
+2. Menambah saldo terkumpul dan jumlah donatur pada kampanye secara atomik.
+3. Mencatat mutasi kredit pada buku kas/rekening.
+4. Membuat log transparansi publik.
+5. Memancarkan event Server-Sent Events (SSE) secara real-time ke web klien.

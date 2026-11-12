@@ -10,8 +10,9 @@ import id.maun.backend.repository.ActivityLogRepository;
 import id.maun.backend.repository.BankMutationRepository;
 import id.maun.backend.repository.CampaignRepository;
 import id.maun.backend.repository.DonationRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
 public class DonationService {
@@ -33,6 +33,47 @@ public class DonationService {
     private final ActivityLogRepository activityLogRepository;
     private final BankIntegrationService bankIntegrationService;
     private final SseNotificationService sseNotificationService;
+    private final XenditService xenditService;
+
+    @Value("${payment.gateway.provider:xendit}")
+    private String paymentGatewayProvider = "xendit";
+
+    @Autowired
+    public DonationService(
+            DonationRepository donationRepository,
+            CampaignRepository campaignRepository,
+            BankMutationRepository bankMutationRepository,
+            ActivityLogRepository activityLogRepository,
+            BankIntegrationService bankIntegrationService,
+            SseNotificationService sseNotificationService,
+            XenditService xenditService
+    ) {
+        this.donationRepository = donationRepository;
+        this.campaignRepository = campaignRepository;
+        this.bankMutationRepository = bankMutationRepository;
+        this.activityLogRepository = activityLogRepository;
+        this.bankIntegrationService = bankIntegrationService;
+        this.sseNotificationService = sseNotificationService;
+        this.xenditService = xenditService;
+    }
+
+    // Overload untuk backward-compatibility di testing tanpa XenditService
+    public DonationService(
+            DonationRepository donationRepository,
+            CampaignRepository campaignRepository,
+            BankMutationRepository bankMutationRepository,
+            ActivityLogRepository activityLogRepository,
+            BankIntegrationService bankIntegrationService,
+            SseNotificationService sseNotificationService
+    ) {
+        this(donationRepository, campaignRepository, bankMutationRepository, activityLogRepository,
+                bankIntegrationService, sseNotificationService, null);
+        this.paymentGatewayProvider = "simulator";
+    }
+
+    public void setPaymentGatewayProvider(String paymentGatewayProvider) {
+        this.paymentGatewayProvider = paymentGatewayProvider;
+    }
 
     @Transactional
     public DonationDto.DonationResponse createDonation(DonationDto.CreateDonationRequest request) {
@@ -59,20 +100,53 @@ public class DonationService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        if ("QRIS".equalsIgnoreCase(method)) {
-            Map<String, Object> qrisData = bankIntegrationService.generateQris(request.getAmount(), trxId);
-            donation.setQrisString((String) qrisData.get("qrContent"));
-            donation.setQrCodeUrl((String) qrisData.get("qrImageUrl"));
+        boolean isXendit = "xendit".equalsIgnoreCase(paymentGatewayProvider) && xenditService != null;
+
+        if (isXendit) {
+            // Generate checkout invoice link dari Xendit
+            Map<String, Object> invoiceData = xenditService.createInvoice(
+                    trxId,
+                    request.getAmount(),
+                    request.getDonorEmail(),
+                    request.getDonorName(),
+                    "Infaq / Donasi untuk " + campaign.getTitle()
+            );
+            if (invoiceData != null && invoiceData.containsKey("invoiceUrl")) {
+                donation.setPaymentUrl((String) invoiceData.get("invoiceUrl"));
+            }
+
+            if ("QRIS".equalsIgnoreCase(method)) {
+                Map<String, Object> qrisData = xenditService.createQris(request.getAmount(), trxId);
+                donation.setQrisString((String) qrisData.get("qrContent"));
+                donation.setQrCodeUrl((String) qrisData.get("qrImageUrl"));
+            } else {
+                // Virtual Account via Xendit
+                Map<String, Object> vaData = xenditService.createVirtualAccount(
+                        trxId,
+                        request.getPaymentChannel(),
+                        request.getDonorName(),
+                        request.getAmount()
+                );
+                donation.setVaNumber((String) vaData.get("virtualAccountNo"));
+            }
         } else {
-            // Virtual Account
-            String vaNumber = "9988" + (System.currentTimeMillis() % 10000000000L);
-            Map<String, Object> vaData = bankIntegrationService.createVirtualAccount(
-                    vaNumber, request.getAmount(), request.getDonorName(), trxId);
-            donation.setVaNumber((String) vaData.get("virtualAccountNo"));
+            // Mode Simulator Bank Mandiri/BSI internal
+            if ("QRIS".equalsIgnoreCase(method)) {
+                Map<String, Object> qrisData = bankIntegrationService.generateQris(request.getAmount(), trxId);
+                donation.setQrisString((String) qrisData.get("qrContent"));
+                donation.setQrCodeUrl((String) qrisData.get("qrImageUrl"));
+            } else {
+                // Virtual Account
+                String vaNumber = "9988" + (System.currentTimeMillis() % 10000000000L);
+                Map<String, Object> vaData = bankIntegrationService.createVirtualAccount(
+                        vaNumber, request.getAmount(), request.getDonorName(), trxId);
+                donation.setVaNumber((String) vaData.get("virtualAccountNo"));
+            }
         }
 
         Donation saved = donationRepository.save(donation);
-        log.info("Created donation {} for amount {} via {}", trxId, request.getAmount(), method);
+        log.info("Created donation {} for amount {} via {} [Provider: {}]", trxId, request.getAmount(), method,
+                isXendit ? "XENDIT" : "SIMULATOR");
 
         return toResponse(saved);
     }
@@ -187,6 +261,24 @@ public class DonationService {
         }
     }
 
+    /**
+     * Memproses notifikasi sukses dari Webhook atau Simulasi Xendit
+     */
+    @Transactional
+    public boolean processXenditPayment(String transactionId, BigDecimal amount, String paymentMethod, String xenditTransactionId) {
+        log.info("Processing Xendit Payment for Trx: {}, Amount: {}, Method: {}, XenditId: {}",
+                transactionId, amount, paymentMethod, xenditTransactionId);
+
+        Map<String, Object> payload = Map.of(
+                "transactionId", xenditTransactionId != null ? xenditTransactionId : "XND-" + System.currentTimeMillis(),
+                "paymentType", paymentMethod != null ? paymentMethod : "XENDIT",
+                "additionalInfo", Map.of("orderId", transactionId),
+                "amount", Map.of("value", amount != null ? amount.toString() : "0")
+        );
+
+        return processPaymentCallback(payload);
+    }
+
     public DonationDto.DonationResponse toResponse(Donation donation) {
         return DonationDto.DonationResponse.builder()
                 .id(donation.getId())
@@ -204,6 +296,7 @@ public class DonationService {
                 .qrisString(donation.getQrisString())
                 .qrCodeUrl(donation.getQrCodeUrl())
                 .vaNumber(donation.getVaNumber())
+                .paymentUrl(donation.getPaymentUrl())
                 .paidAt(donation.getPaidAt())
                 .expiresAt(donation.getExpiresAt())
                 .createdAt(donation.getCreatedAt())

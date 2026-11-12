@@ -37,3 +37,4 @@ public class OpenApiConfig {
                                         .description("Masukkan token JWT yang didapatkan dari endpoint /api/v1/auth/login")));
     }
 }
+

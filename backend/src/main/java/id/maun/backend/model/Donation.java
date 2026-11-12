@@ -59,6 +59,9 @@ public class Donation {
 
     private String vaNumber;
 
+    @Column(columnDefinition = "TEXT")
+    private String paymentUrl;
+
     private LocalDateTime paidAt;
 
     private LocalDateTime expiresAt;

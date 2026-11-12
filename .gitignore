@@ -17,6 +17,11 @@ frontend/coverage/
 *.jar
 *.war
 
+# Environment & Secrets
+.env*
+!.env.example
+*.csv
+
 # Logs & temp files
 *.log
 .DS_Store
