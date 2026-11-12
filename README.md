@@ -51,4 +51,6 @@ docker-compose up -d
 | **Prometheus** | `http://localhost:9091` | Metrics scraper engine |
 | **Loki** | `http://localhost:3100` | Log query engine |
 | **Jenkins** | `http://localhost:8080` | CI/CD build & test pipeline runner |
+| **Swagger UI** | `http://localhost:8081/swagger-ui.html` | Dokumentasi interaktif REST API MAUN |
+| **OpenAPI Docs** | `http://localhost:8081/v3/api-docs` | Raw OpenAPI v3 JSON spec |
 | **Backend Actuator** | `http://localhost:8081/actuator/prometheus` | Spring Boot metrics endpoint |

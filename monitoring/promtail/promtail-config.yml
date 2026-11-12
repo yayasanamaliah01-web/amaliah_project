@@ -24,3 +24,4 @@ scrape_configs:
         labels:
           job: containerlogs
           __path__: /var/log/containers/*log
+

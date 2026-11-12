@@ -39,6 +39,11 @@ public class SecurityConfig {
                                 "/api/v1/bank-callback/**",
                                 "/api/v1/stream/**",
                                 "/actuator/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**",
                                 "/h2-console/**",
                                 "/error"
                         ).permitAll()
