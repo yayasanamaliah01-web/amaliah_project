@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   api,
   API_BASE_URL,
@@ -35,6 +35,7 @@ interface AppContextType {
   setUserRole: (role: UserRole) => void;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, phone?: string, role?: string) => Promise<void>;
+  loginWithGoogle: (credential?: string, code?: string, redirectUri?: string) => Promise<UserProfile>;
   logout: () => void;
 
   // Backend Live Data
@@ -246,6 +247,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setUserRole(roleMap[res.role?.toUpperCase()] || 'user');
   };
 
+  const loginWithGoogle = async (credential?: string, code?: string, redirectUri?: string) => {
+    const res = await api.auth.google({ credential, code, redirectUri });
+    const user: UserProfile = {
+      id: res.id,
+      name: res.name,
+      email: res.email,
+      role: res.role,
+      phone: res.phone,
+      token: res.token,
+    };
+
+    localStorage.setItem('amaliah_token', res.token);
+    localStorage.setItem('amaliah_user', JSON.stringify(user));
+
+    setCurrentUser(user);
+    setToken(res.token);
+
+    const roleMap: Record<string, UserRole> = {
+      ADMIN: 'admin',
+      BENDAHARA: 'analis',
+      RELAWAN: 'penyalur',
+      DONATUR: 'user',
+    };
+    setUserRole(roleMap[res.role?.toUpperCase()] || 'user');
+    return user;
+  };
+
   const logout = () => {
     localStorage.removeItem('amaliah_token');
     localStorage.removeItem('amaliah_user');
@@ -268,6 +296,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setUserRole,
         login,
         register,
+        loginWithGoogle,
         logout,
         campaigns,
         summary,

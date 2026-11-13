@@ -23,4 +23,14 @@ public class AuthController {
     public ResponseEntity<AuthDto.AuthResponse> login(@Valid @RequestBody AuthDto.LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
+
+    @PostMapping("/google")
+    public ResponseEntity<AuthDto.AuthResponse> googleLogin(@RequestBody AuthDto.GoogleAuthRequest request) {
+        return ResponseEntity.ok(authService.googleLogin(request));
+    }
+
+    @GetMapping("/google/client-id")
+    public ResponseEntity<java.util.Map<String, String>> getGoogleClientId() {
+        return ResponseEntity.ok(java.util.Map.of("clientId", authService.getGoogleClientId()));
+    }
 }

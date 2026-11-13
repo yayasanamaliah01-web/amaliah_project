@@ -18,6 +18,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -38,6 +39,9 @@ class AuthServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
+    @Mock
+    private RestTemplate restTemplate;
+
     private JwtService jwtService;
     private AuthService authService;
 
@@ -51,7 +55,9 @@ class AuthServiceTest {
         ReflectionTestUtils.setField(jwtService, "secretKey", "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970");
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 86400000L);
 
-        authService = new AuthService(userRepository, passwordEncoder, jwtService, authenticationManager);
+        authService = new AuthService(userRepository, passwordEncoder, jwtService, authenticationManager, restTemplate);
+        ReflectionTestUtils.setField(authService, "googleClientId", "test-client-id");
+        ReflectionTestUtils.setField(authService, "googleClientSecret", "test-client-secret");
 
         registerRequest = AuthDto.RegisterRequest.builder()
                 .name("Ahmad Donatur")

@@ -47,6 +47,16 @@ public class AuthDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class GoogleAuthRequest {
+        private String credential; // Google ID Token (GIS)
+        private String code;       // Google Auth Code
+        private String redirectUri;// Client redirect URI for code flow
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class AuthResponse {
         private String token;
         private String tokenType;

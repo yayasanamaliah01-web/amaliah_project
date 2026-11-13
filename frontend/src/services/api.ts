@@ -179,6 +179,12 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(body),
       }),
+    google: (body: { credential?: string; code?: string; redirectUri?: string }) =>
+      request<AuthResponse>('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    getGoogleClientId: () => request<{ clientId: string }>('/auth/google/client-id'),
   },
   campaigns: {
     getAll: (category?: string, status?: string) => {

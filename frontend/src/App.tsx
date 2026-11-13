@@ -28,6 +28,7 @@ import AnalisApp from './analis/AnalisApp';
 import KetuaApp from './ketua/KetuaApp';
 import LoginPage from './pages/Login';
 import PembayaranPage from './pages/Pembayaran';
+import GoogleCallback from './pages/GoogleCallback';
 import { useAppContext } from './context/AppContext';
 
 // Wrappers for routes with dynamic URL params
@@ -143,6 +144,10 @@ export default function App() {
 
   if (pathname.startsWith('/ketua')) {
     return <KetuaApp />;
+  }
+
+  if (pathname === '/auth/google/callback') {
+    return <GoogleCallback />;
   }
 
   if (pathname === '/login') {
