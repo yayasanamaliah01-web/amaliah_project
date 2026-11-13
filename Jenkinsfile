@@ -75,7 +75,7 @@ pipeline {
         failure {
             echo '❌ Pipeline Failed! Please check test logs or build errors above.'
         }
-        always {
+        cleanup {
             cleanWs deleteDirs: false, notFailBuild: true
         }
     }
