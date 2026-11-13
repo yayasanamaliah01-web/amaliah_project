@@ -1,17 +1,16 @@
 # ==========================================
-# Stage 1: Build JAR with Maven & Eclipse Temurin JDK 21
+# Stage 1: Build JAR with Maven & JDK 21
 # ==========================================
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
 WORKDIR /workspace
 
-# Copy maven wrapper & pom.xml to take advantage of Docker cache
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+# Copy pom.xml to cache dependencies
+COPY pom.xml ./
+RUN mvn dependency:resolve -B || true
 
 # Copy source code and build production package
 COPY src/ src/
-RUN ./mvnw clean package -DskipTests -B
+RUN mvn clean package -DskipTests -B
 
 # ==========================================
 # Stage 2: Lightweight JRE 21 Runtime
