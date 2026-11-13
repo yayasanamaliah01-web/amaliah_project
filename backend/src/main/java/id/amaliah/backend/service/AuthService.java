@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,6 +38,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RestTemplate restTemplate;
+    private final EmailService emailService;
 
     @Value("${google.oauth.client-id:}")
     private String googleClientId;
@@ -207,5 +209,56 @@ public class AuthService {
             throw new BadRequestException("Gagal menukar kode otorisasi Google: " + e.getMessage());
         }
         return null;
+    }
+
+    @Transactional
+    public AuthDto.MessageResponse forgotPassword(AuthDto.ForgotPasswordRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            // For security, don't disclose whether email is registered or not
+            return AuthDto.MessageResponse.builder()
+                    .success(true)
+                    .message("Jika email terdaftar, kode verifikasi reset password telah dikirim ke email Anda.")
+                    .build();
+        }
+
+        User user = userOpt.get();
+        // Generate secure 6-digit OTP code
+        String resetToken = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
+        user.setResetPasswordToken(resetToken);
+        user.setResetPasswordExpiry(java.time.LocalDateTime.now().plusMinutes(15));
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), user.getName(), resetToken);
+
+        return AuthDto.MessageResponse.builder()
+                .success(true)
+                .message("Kode verifikasi reset password (OTP 6 digit) telah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam.")
+                .build();
+    }
+
+    @Transactional
+    public AuthDto.MessageResponse resetPassword(AuthDto.ResetPasswordRequest request) {
+        String token = request.getToken().trim();
+        User user = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new BadRequestException("Kode verifikasi salah atau tidak ditemukan"));
+
+        if (user.getResetPasswordExpiry() == null || user.getResetPasswordExpiry().isBefore(java.time.LocalDateTime.now())) {
+            throw new BadRequestException("Kode verifikasi sudah kadaluarsa (melebihi 15 menit). Silakan minta kode baru.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setResetPasswordToken(null);
+        user.setResetPasswordExpiry(null);
+        userRepository.save(user);
+
+        emailService.sendPasswordChangedNotice(user.getEmail(), user.getName());
+
+        return AuthDto.MessageResponse.builder()
+                .success(true)
+                .message("Password berhasil direset! Silakan masuk dengan kata sandi baru Anda.")
+                .build();
     }
 }

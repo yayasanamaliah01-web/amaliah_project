@@ -185,6 +185,16 @@ export const api = {
         body: JSON.stringify(body),
       }),
     getGoogleClientId: () => request<{ clientId: string }>('/auth/google/client-id'),
+    forgotPassword: (body: { email: string }) =>
+      request<{ message: string; success: boolean }>('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
+    resetPassword: (body: { token: string; newPassword: string }) =>
+      request<{ message: string; success: boolean }>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      }),
   },
   campaigns: {
     getAll: (category?: string, status?: string) => {

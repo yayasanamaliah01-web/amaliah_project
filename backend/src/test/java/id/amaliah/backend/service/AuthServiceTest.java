@@ -42,6 +42,9 @@ class AuthServiceTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Mock
+    private EmailService emailService;
+
     private JwtService jwtService;
     private AuthService authService;
 
@@ -55,7 +58,7 @@ class AuthServiceTest {
         ReflectionTestUtils.setField(jwtService, "secretKey", "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970");
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 86400000L);
 
-        authService = new AuthService(userRepository, passwordEncoder, jwtService, authenticationManager, restTemplate);
+        authService = new AuthService(userRepository, passwordEncoder, jwtService, authenticationManager, restTemplate, emailService);
         ReflectionTestUtils.setField(authService, "googleClientId", "test-client-id");
         ReflectionTestUtils.setField(authService, "googleClientSecret", "test-client-secret");
 
@@ -177,5 +180,39 @@ class AuthServiceTest {
         when(userRepository.findByEmail(loginRequest.getEmail())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> authService.login(loginRequest));
+    }
+
+    @Test
+    @DisplayName("ForgotPassword: Generates OTP and sends email when user exists")
+    void shouldGenerateOtpAndSendEmailOnForgotPassword() {
+        when(userRepository.findByEmail("ahmad@example.com")).thenReturn(Optional.of(user));
+
+        AuthDto.ForgotPasswordRequest req = new AuthDto.ForgotPasswordRequest("ahmad@example.com");
+        AuthDto.MessageResponse res = authService.forgotPassword(req);
+
+        assertTrue(res.isSuccess());
+        assertNotNull(user.getResetPasswordToken());
+        assertEquals(6, user.getResetPasswordToken().length());
+        verify(emailService).sendPasswordResetEmail(eq("ahmad@example.com"), eq("Ahmad Donatur"), eq(user.getResetPasswordToken()));
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    @DisplayName("ResetPassword: Successfully updates password with valid OTP")
+    void shouldResetPasswordWithValidOtp() {
+        user.setResetPasswordToken("123456");
+        user.setResetPasswordExpiry(java.time.LocalDateTime.now().plusMinutes(10));
+
+        when(userRepository.findByResetPasswordToken("123456")).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newSecret456")).thenReturn("hashedNewSecret");
+
+        AuthDto.ResetPasswordRequest req = new AuthDto.ResetPasswordRequest("123456", "newSecret456");
+        AuthDto.MessageResponse res = authService.resetPassword(req);
+
+        assertTrue(res.isSuccess());
+        assertNull(user.getResetPasswordToken());
+        assertEquals("hashedNewSecret", user.getPassword());
+        verify(emailService).sendPasswordChangedNotice(eq("ahmad@example.com"), eq("Ahmad Donatur"));
+        verify(userRepository).save(user);
     }
 }

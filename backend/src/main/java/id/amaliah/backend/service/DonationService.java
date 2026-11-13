@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class DonationService {
     private final BankIntegrationService bankIntegrationService;
     private final SseNotificationService sseNotificationService;
     private final XenditService xenditService;
+
+    @Autowired(required = false)
+    private EmailService emailService;
 
     @Value("${payment.gateway.provider:xendit}")
     private String paymentGatewayProvider = "xendit";
@@ -251,6 +255,22 @@ public class DonationService {
                     "timestamp", LocalDateTime.now().toString()
             );
             sseNotificationService.broadcast("DONATION_SUCCESS", eventData);
+
+            // Kirim E-Receipt (Kuitansi Donasi Resmi) ke email donatur jika tersedia
+            if (emailService != null && StringUtils.hasText(donation.getDonorEmail())) {
+                try {
+                    emailService.sendDonationReceiptEmail(
+                            donation.getDonorEmail(),
+                            donation.getDonorName(),
+                            donation.getTransactionId(),
+                            donation.getCampaignTitle(),
+                            donation.getAmount(),
+                            donation.getPaymentMethod()
+                    );
+                } catch (Exception ex) {
+                    log.warn("Gagal mengirim email kuitansi ke {}: {}", donation.getDonorEmail(), ex.getMessage());
+                }
+            }
 
             log.info("Donation {} successfully processed and updated campaign balance", orderId);
             return true;

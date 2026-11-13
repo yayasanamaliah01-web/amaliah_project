@@ -57,6 +57,38 @@ public class AuthDto {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
+    public static class ForgotPasswordRequest {
+        @NotBlank(message = "Email wajib diisi")
+        @Email(message = "Format email tidak valid")
+        private String email;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class ResetPasswordRequest {
+        @NotBlank(message = "Kode OTP / token reset wajib diisi")
+        private String token;
+
+        @NotBlank(message = "Password baru wajib diisi")
+        @Size(min = 6, message = "Password baru minimal 6 karakter")
+        private String newPassword;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MessageResponse {
+        private String message;
+        private boolean success;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class AuthResponse {
         private String token;
         private String tokenType;

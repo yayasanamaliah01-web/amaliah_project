@@ -33,4 +33,14 @@ public class AuthController {
     public ResponseEntity<java.util.Map<String, String>> getGoogleClientId() {
         return ResponseEntity.ok(java.util.Map.of("clientId", authService.getGoogleClientId()));
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<AuthDto.MessageResponse> forgotPassword(@Valid @RequestBody AuthDto.ForgotPasswordRequest request) {
+        return ResponseEntity.ok(authService.forgotPassword(request));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<AuthDto.MessageResponse> resetPassword(@Valid @RequestBody AuthDto.ResetPasswordRequest request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
+    }
 }

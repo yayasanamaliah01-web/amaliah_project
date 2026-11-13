@@ -40,6 +40,14 @@ export default function LoginPage({
   const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Forgot password state
+  const [isForgotMode, setIsForgotMode] = useState(false);
+  const [forgotStep, setForgotStep] = useState<'REQUEST' | 'RESET'>('REQUEST');
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [resetOtp, setResetOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
   // Register form state
   const [regName, setRegName] = useState('');
   const [regEmail, setRegEmail] = useState('');
@@ -100,6 +108,54 @@ export default function LoginPage({
       }, 700);
     } catch (err: any) {
       setErrorMsg(err.message || 'Pendaftaran gagal. Email mungkin sudah terdaftar.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) {
+      setErrorMsg('Masukkan alamat email Anda.');
+      return;
+    }
+    setErrorMsg(null);
+    setIsLoading(true);
+    try {
+      const res = await api.auth.forgotPassword({ email: forgotEmail.trim() });
+      setSuccessMsg(res.message || 'Kode verifikasi telah dikirim ke email Anda.');
+      setForgotStep('RESET');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Gagal mengirim instruksi reset password.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetOtp.trim() || !newPassword.trim()) {
+      setErrorMsg('Harap masukkan kode OTP 6 digit dan kata sandi baru.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setErrorMsg('Kata sandi baru minimal 6 karakter.');
+      return;
+    }
+    setErrorMsg(null);
+    setIsLoading(true);
+    try {
+      const res = await api.auth.resetPassword({ token: resetOtp.trim(), newPassword });
+      setSuccessMsg(res.message || 'Kata sandi berhasil diperbarui! Mengalihkan ke login...');
+      setTimeout(() => {
+        setIsForgotMode(false);
+        setForgotStep('REQUEST');
+        setLoginEmail(forgotEmail);
+        setLoginPassword('');
+        setSuccessMsg('Kata sandi berhasil diperbarui. Silakan masuk menggunakan kata sandi baru Anda.');
+      }, 1200);
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Gagal mereset kata sandi. Periksa kode verifikasi.');
     } finally {
       setIsLoading(false);
     }
@@ -189,8 +245,19 @@ export default function LoginPage({
         {/* Title */}
         <div className="mb-5">
           <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-            {isRegisterMode ? 'Daftar Akun Baru' : 'Masuk ke Akun'}
+            {isForgotMode
+              ? (forgotStep === 'REQUEST' ? 'Lupa Kata Sandi' : 'Reset Kata Sandi')
+              : isRegisterMode
+              ? 'Daftar Akun Baru'
+              : 'Masuk ke Akun'}
           </h1>
+          {isForgotMode && (
+            <p className="text-xs text-slate-500 mt-1">
+              {forgotStep === 'REQUEST'
+                ? 'Masukkan alamat email Anda untuk menerima 6 digit kode verifikasi.'
+                : `Kode verifikasi telah dikirim ke ${forgotEmail}. Silakan periksa email Anda.`}
+            </p>
+          )}
         </div>
 
         {/* Feedback messages */}
@@ -215,7 +282,124 @@ export default function LoginPage({
           </div>
         )}
 
-        {!isRegisterMode ? (
+        {isForgotMode ? (
+          /* ================= FORGOT PASSWORD FLOW ================= */
+          forgotStep === 'REQUEST' ? (
+            <form onSubmit={handleForgotRequest} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Email Terdaftar</label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="email"
+                    required
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="nama@email.com"
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:bg-white text-slate-800 text-xs font-normal transition-all"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                ) : (
+                  'Kirim Kode Verifikasi'
+                )}
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotMode(false);
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className="text-xs text-slate-500 hover:text-emerald-700 font-medium cursor-pointer"
+                >
+                  Kembali ke Halaman Masuk
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleResetSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Kode Verifikasi (OTP 6 Digit)</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={resetOtp}
+                  onChange={(e) => setResetOtp(e.target.value)}
+                  placeholder="Contoh: 123456"
+                  className="w-full px-3.5 py-2.5 text-center tracking-widest text-lg font-bold bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:bg-white text-emerald-800 transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Kata Sandi Baru</label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type={showNewPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Minimal 6 karakter"
+                    className="w-full pl-10 pr-10 py-2.5 bg-slate-50/70 border border-slate-200 rounded-xl focus:outline-none focus:border-emerald-500 focus:bg-white text-slate-800 text-xs font-normal transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                  >
+                    {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-2 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isLoading ? (
+                  <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                ) : (
+                  'Simpan Kata Sandi Baru'
+                )}
+              </button>
+
+              <div className="flex justify-between items-center text-xs text-slate-500 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setForgotStep('REQUEST')}
+                  className="hover:text-emerald-700 cursor-pointer"
+                >
+                  Kirim Ulang Kode
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotMode(false);
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className="hover:text-emerald-700 font-medium cursor-pointer"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          )
+        ) : !isRegisterMode ? (
           /* ================= LOGIN FORM ================= */
           <form onSubmit={handleLoginSubmit} className="space-y-3.5">
             <div>
@@ -234,7 +418,22 @@ export default function LoginPage({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Password</label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-medium text-slate-700">Password</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgotMode(true);
+                    setForgotStep('REQUEST');
+                    setForgotEmail(loginEmail);
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className="text-[11px] font-medium text-emerald-700 hover:underline cursor-pointer"
+                >
+                  Lupa Password?
+                </button>
+              </div>
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                 <input

@@ -43,6 +43,8 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       STORAGE_UPLOAD_DIR: /opt/amaliah_project/storage/uploads
       XENDIT_SECRET_KEY: ${XENDIT_SECRET_KEY:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-Yayasan Amaliah <onboarding@resend.dev>}
     ports:
       - "8081:8081"
     volumes:
