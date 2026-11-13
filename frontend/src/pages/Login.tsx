@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LogIn,
   UserPlus,
@@ -13,8 +13,10 @@ import {
   Phone,
   Eye,
   EyeOff,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
+import { api } from '../services/api';
 
 export default function LoginPage({
   onBack,
@@ -24,14 +26,20 @@ export default function LoginPage({
   onSuccess?: () => void;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, register, loginWithGoogle } = useAppContext();
   const [isRegisterMode, setIsRegisterMode] = useState(false);
 
-  // Login form state
-  const [loginEmail, setLoginEmail] = useState('admin@amaliah.id');
-  const [loginPassword, setLoginPassword] = useState('admin123');
+  // Read location state if redirected from checkout or protected route
+  const redirectPath = (location.state as any)?.redirect;
+  const checkoutState = (location.state as any)?.checkoutState;
+  const redirectMessage = (location.state as any)?.message;
+
+  // Login form state - default to Donatur
+  const [loginEmail, setLoginEmail] = useState('donatur@example.com');
+  const [loginPassword, setLoginPassword] = useState('donatur123');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedDemo, setSelectedDemo] = useState('ADMIN');
+  const [selectedDemo, setSelectedDemo] = useState('DONATUR');
 
   // Register form state
   const [regName, setRegName] = useState('');
@@ -46,10 +54,10 @@ export default function LoginPage({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   const demoAccounts = [
+    { key: 'DONATUR', label: 'Wali Santri / Muhsinin', email: 'donatur@example.com', pass: 'donatur123' },
     { key: 'ADMIN', label: 'Admin Pesantren', email: 'admin@amaliah.id', pass: 'admin123' },
     { key: 'BENDAHARA', label: 'Bendahara Pesantren', email: 'bendahara@amaliah.id', pass: 'bendahara123' },
     { key: 'RELAWAN', label: 'Pengurus / Ustadz', email: 'relawan@amaliah.id', pass: 'relawan123' },
-    { key: 'DONATUR', label: 'Wali Santri / Muhsinin', email: 'donatur@example.com', pass: 'donatur123' },
   ];
 
   const handleDemoSelect = (key: string) => {
@@ -62,6 +70,18 @@ export default function LoginPage({
     }
   };
 
+  const navigateAfterAuth = () => {
+    if (checkoutState && redirectPath) {
+      navigate(redirectPath, { state: checkoutState });
+    } else if (redirectPath) {
+      navigate(redirectPath);
+    } else if (onSuccess) {
+      onSuccess();
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -69,13 +89,9 @@ export default function LoginPage({
 
     try {
       await login(loginEmail, loginPassword);
-      setSuccessMsg('Login berhasil! Mengalihkan ke dashboard...');
+      setSuccessMsg('Login berhasil! Mengalihkan...');
       setTimeout(() => {
-        if (onSuccess) {
-          onSuccess();
-        } else {
-          navigate('/dashboard');
-        }
+        navigateAfterAuth();
       }, 500);
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal masuk. Periksa email dan password Anda.');
@@ -96,13 +112,9 @@ export default function LoginPage({
     setIsLoading(true);
     try {
       await register(regName, regEmail, regPassword, regPhone, regRole);
-      setSuccessMsg('Pendaftaran berhasil! Mengalihkan ke dashboard...');
+      setSuccessMsg('Pendaftaran berhasil! Mengalihkan...');
       setTimeout(() => {
-        if (onSuccess) {
-          onSuccess();
-        } else {
-          navigate('/dashboard');
-        }
+        navigateAfterAuth();
       }, 700);
     } catch (err: any) {
       setErrorMsg(err.message || 'Pendaftaran gagal. Email mungkin sudah terdaftar.');
@@ -141,8 +153,7 @@ export default function LoginPage({
               await loginWithGoogle(response.credential);
               setSuccessMsg('Login dengan Google berhasil! Mengalihkan...');
               setTimeout(() => {
-                if (onSuccess) onSuccess();
-                else navigate('/dashboard');
+                navigateAfterAuth();
               }, 500);
             } catch (err: any) {
               setErrorMsg(err.message || 'Gagal login via Google');
@@ -193,6 +204,13 @@ export default function LoginPage({
         </div>
 
         {/* Feedback messages */}
+        {redirectMessage && !errorMsg && !successMsg && (
+          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-start gap-2.5 text-amber-900 text-xs">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+            <span className="font-medium">{redirectMessage}</span>
+          </div>
+        )}
+
         {errorMsg && (
           <div className="mb-4 p-3 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-2 text-rose-700 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
@@ -457,6 +475,19 @@ export default function LoginPage({
             </div>
           </form>
         )}
+
+        {/* Link Portal Admin / Pengurus */}
+        <div className="mt-8 pt-4 border-t border-slate-100 text-center">
+          <p className="text-xs text-slate-500 mb-1.5">Pengurus Pesantren, Bendahara, atau Relawan?</p>
+          <button
+            type="button"
+            onClick={() => navigate('/admin/login')}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Portal Khusus Pengurus / Admin</span>
+          </button>
+        </div>
       </div>
     </div>
   );

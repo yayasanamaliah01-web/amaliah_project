@@ -27,6 +27,7 @@ import PenyalurApp from './penyalur/PenyalurApp';
 import AnalisApp from './analis/AnalisApp';
 import KetuaApp from './ketua/KetuaApp';
 import LoginPage from './pages/Login';
+import AdminLogin from './admin/pages/AdminLogin';
 import PembayaranPage from './pages/Pembayaran';
 import GoogleCallback from './pages/GoogleCallback';
 import { useAppContext } from './context/AppContext';
@@ -60,7 +61,7 @@ export default function App() {
   const isLoggedIn = userRole !== 'guest';
   const pathname = location.pathname;
 
-  // Satukan alur donasi ke URL resmi /pembayaran
+  // Satukan alur donasi ke URL resmi /pembayaran (Wajib Login sebelum donasi)
   const openCheckout = (progId?: string | number, amount?: number) => {
     let targetCampaign = campaigns[0];
     const targetId = progId || selectedProgramId;
@@ -69,12 +70,25 @@ export default function App() {
       if (found) targetCampaign = found;
     }
 
+    const checkoutState = {
+      campaignId: targetCampaign?.id || 1,
+      programTitle: targetCampaign?.title || 'Infaq & Zakat Yayasan Semarang Infak',
+      amount: amount || 50000,
+    };
+
+    if (!isLoggedIn) {
+      navigate('/login', {
+        state: {
+          redirect: '/pembayaran',
+          checkoutState,
+          message: 'Silakan masuk ke akun Anda terlebih dahulu sebelum melanjutkan donasi.',
+        },
+      });
+      return;
+    }
+
     navigate('/pembayaran', {
-      state: {
-        campaignId: targetCampaign?.id || 1,
-        programTitle: targetCampaign?.title || 'Infaq & Zakat Yayasan Semarang Infak',
-        amount: amount || 50000,
-      },
+      state: checkoutState,
     });
   };
 
@@ -130,7 +144,15 @@ export default function App() {
   const activePage = getActivePageName();
 
   // Full-screen Standalone Role Portals (Admin, Penyalur, Analis, Ketua, Login)
+  if (pathname === '/admin/login') {
+    return <AdminLogin />;
+  }
+
   if (pathname.startsWith('/admin')) {
+    const isStaff = ['admin', 'analis', 'penyalur', 'ketua'].includes(userRole);
+    if (!isStaff) {
+      return <Navigate to="/admin/login" replace />;
+    }
     return <AdminApp onExitAdmin={() => { setUserRole('guest'); navigate('/'); }} />;
   }
 
@@ -202,11 +224,43 @@ export default function App() {
       <main className="flex-1 flex flex-col bg-white" id="mainContent">
         <Routes>
           <Route path="/" element={<HomePage openCheckout={openCheckout} setActivePage={handleNavigatePage} />} />
-          <Route path="/dashboard" element={<DashboardPage openCheckout={openCheckout} setActivePage={handleNavigatePage} onSelectProgram={handleSelectProgram} />} />
+          <Route
+            path="/dashboard"
+            element={
+              isLoggedIn ? (
+                <DashboardPage openCheckout={openCheckout} setActivePage={handleNavigatePage} onSelectProgram={handleSelectProgram} />
+              ) : (
+                <Navigate
+                  to="/login"
+                  replace
+                  state={{
+                    redirect: '/dashboard',
+                    message: 'Silakan masuk untuk melihat ringkasan akun dan riwayat donasi Anda.',
+                  }}
+                />
+              )
+            }
+          />
           <Route path="/programs" element={<ProgramsPage onSelectProgram={handleSelectProgram} onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/programs/:id" element={<ProgramDetailRoute openCheckout={openCheckout} />} />
           <Route path="/zakat" element={<ZakatPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} openCheckout={openCheckout} />} />
-          <Route path="/pembayaran" element={<PembayaranPage />} />
+          <Route
+            path="/pembayaran"
+            element={
+              isLoggedIn ? (
+                <PembayaranPage />
+              ) : (
+                <Navigate
+                  to="/login"
+                  replace
+                  state={{
+                    redirect: '/pembayaran',
+                    message: 'Silakan masuk ke akun Anda terlebih dahulu sebelum melanjutkan donasi.',
+                  }}
+                />
+              )
+            }
+          />
           <Route path="/wakaf" element={<WakafPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/qurban" element={<QurbanPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/galang-dana" element={<GalangDanaPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
@@ -215,7 +269,16 @@ export default function App() {
           <Route path="/articles" element={<ArticlesPage onSelectArticle={handleSelectArticle} />} />
           <Route path="/articles/:id" element={<ArticleDetailRoute />} />
           <Route path="/advisor" element={<AdvisorPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
-          <Route path="/profile" element={<ProfilePage onLogout={handleLogout} onEnterAdmin={() => { setUserRole('admin'); navigate('/admin'); }} />} />
+          <Route
+            path="/profile"
+            element={
+              isLoggedIn ? (
+                <ProfilePage onLogout={handleLogout} onEnterAdmin={() => { setUserRole('admin'); navigate('/admin'); }} />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
