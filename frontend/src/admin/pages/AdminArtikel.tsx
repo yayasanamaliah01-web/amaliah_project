@@ -16,9 +16,12 @@ import {
   Save,
   X,
   ExternalLink,
+  Upload,
+  Loader2,
 } from 'lucide-react';
 import { Article } from '../../types';
 import { articlesData as defaultArticles } from '../../data';
+import { api } from '../../services/api';
 
 const STORAGE_KEY = 'amaliah_articles';
 
@@ -74,6 +77,22 @@ export default function AdminArtikel() {
     'Kisah Santri & Pesantren': 'bg-blue-100 text-blue-800',
     'Infaq & Sedekah': 'bg-amber-100 text-amber-800',
     'Transparansi & Program': 'bg-purple-100 text-purple-800',
+  };
+
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploading(true);
+      const res = await api.storage.upload(file, 'articles');
+      setFormData(prev => ({ ...prev, imgUrl: res.url }));
+    } catch (err: any) {
+      alert('Gagal mengunggah berkas ke storage: ' + (err.message || err));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleOpenAdd = () => {
@@ -424,16 +443,36 @@ export default function AdminArtikel() {
 
               <div>
                 <label className="font-bold text-slate-700 block mb-1">
-                  URL Gambar Cover / Sampul
+                  Gambar Cover / Sampul (URL atau Upload Berkas)
                 </label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
-                    type="url"
-                    placeholder="https://images.unsplash.com/..."
+                    type="text"
+                    placeholder="https://... atau klik Upload"
                     value={formData.imgUrl || ''}
                     onChange={(e) => setFormData({ ...formData, imgUrl: e.target.value })}
                     className="flex-1 p-2.5 rounded-xl border border-slate-200 font-mono text-[11px] text-slate-700 outline-none focus:border-emerald-600"
                   />
+                  <label className="cursor-pointer px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl font-bold flex items-center justify-center gap-1.5 shrink-0 transition-colors border border-emerald-200 text-xs">
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Mengunggah...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload ke Storage</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={isUploading}
+                      onChange={handleFileUpload}
+                    />
+                  </label>
                   {formData.imgUrl && (
                     <img
                       src={formData.imgUrl}

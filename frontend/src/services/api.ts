@@ -306,4 +306,24 @@ export const api = {
         body: JSON.stringify({ transactionId, amount }),
       }),
   },
+  storage: {
+    upload: async (file: File, subFolder?: string): Promise<{ url: string; originalName: string; storedName: string }> => {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (subFolder) formData.append('subFolder', subFolder);
+      const token = localStorage.getItem('amaliah_token');
+      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+      const response = await fetch(`${API_BASE_URL}/storage/upload`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error('Gagal mengunggah berkas ke storage');
+      }
+      return response.json();
+    },
+    listFiles: (): Promise<string[]> => request<string[]>('/storage/files'),
+    getInfo: (): Promise<any> => request<any>('/storage/info'),
+  },
 };
