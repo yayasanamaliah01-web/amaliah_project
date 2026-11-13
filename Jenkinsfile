@@ -7,6 +7,11 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    triggers {
+        githubPush()
+        pollSCM('H/2 * * * *')
+    }
+
     environment {
         CI = 'true'
     }
@@ -65,11 +70,30 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy to Production') {
+            steps {
+                echo '=== Deploying Updated Backend and Frontend to VPS Host ==='
+                sh '''
+                    # 1. Salin JAR baru ke direktori produksi host
+                    docker run --rm -v /opt/amaliah_project/app/backend/target:/host_target -v $(pwd)/backend/target:/workspace_target alpine sh -c "mkdir -p /host_target && cp /workspace_target/amaliah-backend-*.jar /host_target/"
+
+                    # 2. Salin bundle frontend dist baru ke direktori produksi host
+                    docker run --rm -v /opt/amaliah_project/app/frontend/dist:/host_dist -v $(pwd)/frontend/dist:/workspace_dist alpine sh -c "mkdir -p /host_dist && cp -r /workspace_dist/* /host_dist/"
+
+                    # 3. Restart backend service & reload Nginx di host
+                    docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i systemctl restart amaliah-backend
+                    docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i systemctl reload nginx
+
+                    echo "Deployment to Production completed successfully!"
+                '''
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Pipeline Succeeded! All tests passed and build artifacts are ready.'
+            echo '✅ Pipeline Succeeded! All tests passed and build artifacts are deployed.'
             archiveArtifacts artifacts: 'backend/target/*.jar, frontend/dist/**', fingerprint: true, allowEmptyArchive: true
         }
         failure {
@@ -80,4 +104,3 @@ pipeline {
         }
     }
 }
-
