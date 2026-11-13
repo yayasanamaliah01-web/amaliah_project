@@ -73,19 +73,31 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                echo '=== Deploying Updated Backend and Frontend to VPS Host ==='
+                echo '=== Deploying Tested Version to VPS Production ==='
                 sh '''
-                    # 1. Salin JAR baru ke direktori produksi host
-                    docker run --rm -v /opt/amaliah_project/app/backend/target:/host_target -v $(pwd)/backend/target:/workspace_target alpine sh -c "mkdir -p /host_target && cp /workspace_target/amaliah-backend-*.jar /host_target/"
+                    docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash -c "
+                        set -e
+                        echo '1. Updating local working copy...'
+                        cd /opt/amaliah_project/app
+                        git restore .
+                        git pull origin main
 
-                    # 2. Salin bundle frontend dist baru ke direktori produksi host
-                    docker run --rm -v /opt/amaliah_project/app/frontend/dist:/host_dist -v $(pwd)/frontend/dist:/workspace_dist alpine sh -c "mkdir -p /host_dist && cp -r /workspace_dist/* /host_dist/"
+                        echo '2. Compiling production frontend bundle...'
+                        cd /opt/amaliah_project/app/frontend
+                        npm run build
+                        chmod -R 755 /opt/amaliah_project/app/frontend/dist
 
-                    # 3. Restart backend service & reload Nginx di host
-                    docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i systemctl restart amaliah-backend
-                    docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i systemctl reload nginx
+                        echo '3. Packaging production backend executable...'
+                        cd /opt/amaliah_project/app/backend
+                        chmod +x mvnw
+                        ./mvnw clean package -DskipTests
 
-                    echo "Deployment to Production completed successfully!"
+                        echo '4. Reloading and restarting production services...'
+                        systemctl restart amaliah-backend
+                        systemctl reload nginx
+
+                        echo '=== Automatic Deployment to Production Succeeded! ==='
+                    "
                 '''
             }
         }
@@ -93,7 +105,7 @@ pipeline {
 
     post {
         success {
-            echo '✅ Pipeline Succeeded! All tests passed and build artifacts are deployed.'
+            echo '✅ Pipeline Succeeded! All tests passed and code deployed to production.'
             archiveArtifacts artifacts: 'backend/target/*.jar, frontend/dist/**', fingerprint: true, allowEmptyArchive: true
         }
         failure {
