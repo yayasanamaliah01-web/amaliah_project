@@ -1,6 +1,78 @@
 services:
   # ==========================================
-  # 1. Grafana Loki - Log Aggregation System
+  # 1. Database - PostgreSQL
+  # ==========================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: amaliah-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: amaliah_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d amaliah_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - amaliah-network
+
+  # ==========================================
+  # 2. Backend - Spring Boot (JDK 21)
+  # ==========================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: amaliah-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/amaliah_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-root}
+      SERVER_PORT: 8081
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-784393382981-temgp6dgtrvecfad5lof5b9kssu4vcdk.apps.googleusercontent.com}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      STORAGE_UPLOAD_DIR: /opt/amaliah_project/storage/uploads
+      XENDIT_SECRET_KEY: ${XENDIT_SECRET_KEY:-}
+    ports:
+      - "8081:8081"
+    volumes:
+      - /opt/amaliah_project/storage/uploads:/opt/amaliah_project/storage/uploads
+      - ./backend/logs:/app/logs
+    networks:
+      - amaliah-network
+
+  # ==========================================
+  # 3. Frontend - React (Vite + Nginx Alpine)
+  # ==========================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: /api/v1
+        VITE_BANK_SIM_URL: /api/v1
+        VITE_GOOGLE_CLIENT_ID: 784393382981-temgp6dgtrvecfad5lof5b9kssu4vcdk.apps.googleusercontent.com
+    container_name: amaliah-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - amaliah-network
+
+  # ==========================================
+  # 4. Grafana Loki - Log Aggregation System
   # ==========================================
   loki:
     image: grafana/loki:3.0.0
@@ -16,7 +88,7 @@ services:
       - amaliah-network
 
   # ==========================================
-  # 2. Promtail - Log Shipper & Collector
+  # 5. Promtail - Log Shipper & Collector
   # ==========================================
   promtail:
     image: grafana/promtail:3.0.0
@@ -33,7 +105,7 @@ services:
       - amaliah-network
 
   # ==========================================
-  # 3. Prometheus - Metrics Monitoring Engine
+  # 6. Prometheus - Metrics Monitoring Engine
   # ==========================================
   prometheus:
     image: prom/prometheus:v2.54.1
@@ -55,13 +127,13 @@ services:
       - amaliah-network
 
   # ==========================================
-  # 4. Grafana - Visualization & Dashboards
+  # 7. Grafana - Visualization & Dashboards
   # ==========================================
   grafana:
     image: grafana/grafana:11.2.0
     container_name: amaliah-grafana
     ports:
-      - "3001:3000" # Port 3001 di host (Port 3000 digunakan Frontend React)
+      - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -77,14 +149,14 @@ services:
       - amaliah-network
 
   # ==========================================
-  # 5. Jenkins - CI/CD Pipeline Automation
+  # 8. Jenkins - CI/CD Pipeline Automation
   # ==========================================
   jenkins:
     image: jenkins/jenkins:lts-jdk21
     container_name: amaliah-jenkins
     ports:
-      - "8080:8080" # Jenkins Web Console
-      - "50000:50000" # Jenkins Agent Port
+      - "8080:8080"
+      - "50000:50000"
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
@@ -97,8 +169,8 @@ networks:
     driver: bridge
 
 volumes:
+  postgres_data:
   loki_data:
   prometheus_data:
   grafana_data:
   jenkins_data:
-

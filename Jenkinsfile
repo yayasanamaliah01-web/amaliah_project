@@ -73,7 +73,7 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                echo '=== Deploying Tested Version to VPS Production ==='
+                echo '=== Deploying Tested Version to Docker Containers on VPS ==='
                 sh '''
                     docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash -c "
                         set -e
@@ -82,21 +82,24 @@ pipeline {
                         git restore .
                         git pull origin main
 
-                        echo '2. Compiling production frontend bundle...'
-                        cd /opt/amaliah_project/app/frontend
-                        npm run build
+                        echo '2. Ensuring conflicting native host services are stopped...'
+                        systemctl stop amaliah-backend 2>/dev/null || true
+                        systemctl disable amaliah-backend 2>/dev/null || true
+                        systemctl stop postgresql 2>/dev/null || true
+                        systemctl disable postgresql 2>/dev/null || true
+
+                        echo '3. Building and spinning up Docker containers...'
+                        docker compose up -d --build postgres backend frontend
+
+                        echo '4. Syncing frontend static distribution assets...'
+                        mkdir -p /opt/amaliah_project/app/frontend/dist
+                        docker cp amaliah-frontend:/usr/share/nginx/html/. /opt/amaliah_project/app/frontend/dist/ 2>/dev/null || true
                         chmod -R 755 /opt/amaliah_project/app/frontend/dist
 
-                        echo '3. Packaging production backend executable...'
-                        cd /opt/amaliah_project/app/backend
-                        chmod +x mvnw
-                        ./mvnw clean package -DskipTests
-
-                        echo '4. Reloading and restarting production services...'
-                        systemctl restart amaliah-backend
+                        echo '5. Reloading host Nginx...'
                         systemctl reload nginx
 
-                        echo '=== Automatic Deployment to Production Succeeded! ==='
+                        echo '=== Automatic Deployment to Docker Containers Succeeded! ==='
                     "
                 '''
             }
