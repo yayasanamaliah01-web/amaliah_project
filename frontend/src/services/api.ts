@@ -1,5 +1,5 @@
-export const API_BASE_URL = 'http://localhost:8081/api/v1';
-export const BANK_SIM_BASE_URL = 'http://localhost:9090';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '/api/v1' : 'http://localhost:8081/api/v1');
+export const BANK_SIM_BASE_URL = import.meta.env.VITE_BANK_SIM_URL || (typeof window !== 'undefined' && window.location.hostname !== 'localhost' ? '/api/v1' : 'http://localhost:9090');
 
 // Helper for HTTP requests
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
