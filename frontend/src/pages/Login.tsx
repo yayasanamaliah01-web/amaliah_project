@@ -35,11 +35,10 @@ export default function LoginPage({
   const checkoutState = (location.state as any)?.checkoutState;
   const redirectMessage = (location.state as any)?.message;
 
-  // Login form state - default to Donatur
-  const [loginEmail, setLoginEmail] = useState('donatur@example.com');
-  const [loginPassword, setLoginPassword] = useState('donatur123');
+  // Login form state
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedDemo, setSelectedDemo] = useState('DONATUR');
 
   // Register form state
   const [regName, setRegName] = useState('');
@@ -52,23 +51,6 @@ export default function LoginPage({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-
-  const demoAccounts = [
-    { key: 'DONATUR', label: 'Wali Santri / Muhsinin', email: 'donatur@example.com', pass: 'donatur123' },
-    { key: 'ADMIN', label: 'Admin Pesantren', email: 'admin@amaliah.id', pass: 'admin123' },
-    { key: 'BENDAHARA', label: 'Bendahara Pesantren', email: 'bendahara@amaliah.id', pass: 'bendahara123' },
-    { key: 'RELAWAN', label: 'Pengurus / Ustadz', email: 'relawan@amaliah.id', pass: 'relawan123' },
-  ];
-
-  const handleDemoSelect = (key: string) => {
-    setSelectedDemo(key);
-    const found = demoAccounts.find((a) => a.key === key);
-    if (found) {
-      setLoginEmail(found.email);
-      setLoginPassword(found.pass);
-      setErrorMsg(null);
-    }
-  };
 
   const navigateAfterAuth = () => {
     if (checkoutState && redirectPath) {
@@ -142,6 +124,14 @@ export default function LoginPage({
     }
 
     const redirectUri = window.location.origin + '/auth/google/callback';
+
+    // Persist redirect intent for OAuth callback
+    if (redirectPath) {
+      sessionStorage.setItem('amaliah_oauth_redirect', redirectPath);
+      if (checkoutState) {
+        sessionStorage.setItem('amaliah_oauth_checkout', JSON.stringify(checkoutState));
+      }
+    }
 
     // 1. Try Google Identity Services (GIS) if loaded
     if (typeof (window as any).google?.accounts?.id !== 'undefined') {
@@ -228,25 +218,6 @@ export default function LoginPage({
         {!isRegisterMode ? (
           /* ================= LOGIN FORM ================= */
           <form onSubmit={handleLoginSubmit} className="space-y-3.5">
-            {/* Demo Role Dropdown */}
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>Pilih Akun Demo (Otomatis Isi)</span>
-              </label>
-              <select
-                value={selectedDemo}
-                onChange={(e) => handleDemoSelect(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all cursor-pointer"
-              >
-                {demoAccounts.map((acc) => (
-                  <option key={acc.key} value={acc.key}>
-                    {acc.label} — {acc.email}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div>
               <label className="block text-xs font-medium text-slate-700 mb-1">Email</label>
               <div className="relative">
@@ -475,19 +446,6 @@ export default function LoginPage({
             </div>
           </form>
         )}
-
-        {/* Link Portal Admin / Pengurus */}
-        <div className="mt-8 pt-4 border-t border-slate-100 text-center">
-          <p className="text-xs text-slate-500 mb-1.5">Pengurus Pesantren, Bendahara, atau Relawan?</p>
-          <button
-            type="button"
-            onClick={() => navigate('/admin/login')}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 px-3 py-1.5 rounded-lg transition-all cursor-pointer"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Portal Khusus Pengurus / Admin</span>
-          </button>
-        </div>
       </div>
     </div>
   );

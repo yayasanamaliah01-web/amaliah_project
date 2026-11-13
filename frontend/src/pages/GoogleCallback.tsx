@@ -29,9 +29,25 @@ export default function GoogleCallback() {
         setStatus('Berhasil terhubung ke Google. Menyiapkan sesi akun...');
         const redirectUri = window.location.origin + '/auth/google/callback';
         await loginWithGoogle(undefined, code, redirectUri);
-        setStatus('Login berhasil! Mengalihkan ke dashboard...');
+        setStatus('Login berhasil! Mengalihkan...');
+
+        const savedRedirect = sessionStorage.getItem('amaliah_oauth_redirect');
+        const savedCheckout = sessionStorage.getItem('amaliah_oauth_checkout');
+        sessionStorage.removeItem('amaliah_oauth_redirect');
+        sessionStorage.removeItem('amaliah_oauth_checkout');
+
         setTimeout(() => {
-          navigate('/dashboard');
+          if (savedRedirect && savedCheckout) {
+            try {
+              navigate(savedRedirect, { state: JSON.parse(savedCheckout) });
+            } catch (_) {
+              navigate(savedRedirect);
+            }
+          } else if (savedRedirect) {
+            navigate(savedRedirect);
+          } else {
+            navigate('/dashboard');
+          }
         }, 600);
       } catch (err: any) {
         setError(err.message || 'Gagal memproses autentikasi Google.');

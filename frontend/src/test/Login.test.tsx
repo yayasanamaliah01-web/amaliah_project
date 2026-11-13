@@ -39,25 +39,26 @@ describe('LoginPage Component Unit Tests', () => {
     );
   };
 
-  it('renders login form and demo accounts', () => {
+  it('renders clean user login form', () => {
     renderLogin();
 
     expect(screen.getByText('Masuk ke Akun')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('nama@email.com')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Masuk/i })).toBeInTheDocument();
-    expect(screen.getByText(/Admin Pesantren/i)).toBeInTheDocument();
-    expect(screen.getByText(/Bendahara Pesantren/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Masuk$/i })).toBeInTheDocument();
   });
 
-  it('selects demo account and fills credentials', () => {
+  it('allows user to input email and password', () => {
     renderLogin();
 
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'BENDAHARA' } });
-
     const emailInput = screen.getByPlaceholderText('nama@email.com') as HTMLInputElement;
-    expect(emailInput.value).toBe('bendahara@amaliah.id');
+    const passwordInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
+
+    fireEvent.change(emailInput, { target: { value: 'donatur@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'donatur123' } });
+
+    expect(emailInput.value).toBe('donatur@example.com');
+    expect(passwordInput.value).toBe('donatur123');
   });
 
   it('submits login successfully and calls onSuccess', async () => {
@@ -67,14 +68,19 @@ describe('LoginPage Component Unit Tests', () => {
       token: 'mock-jwt-token',
       tokenType: 'Bearer',
       id: 1,
-      name: 'Admin',
-      email: 'admin@amaliah.id',
-      role: 'ADMIN',
+      name: 'Donatur',
+      email: 'donatur@example.com',
+      role: 'DONATUR',
     });
 
     renderLogin({ onSuccess: handleSuccess });
 
-    const submitBtn = screen.getByRole('button', { name: /Masuk/i });
+    const emailInput = screen.getByPlaceholderText('nama@email.com') as HTMLInputElement;
+    const passwordInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
+    fireEvent.change(emailInput, { target: { value: 'donatur@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'donatur123' } });
+
+    const submitBtn = screen.getByRole('button', { name: /^Masuk$/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
@@ -93,7 +99,12 @@ describe('LoginPage Component Unit Tests', () => {
 
     renderLogin();
 
-    const submitBtn = screen.getByRole('button', { name: /Masuk/i });
+    const emailInput = screen.getByPlaceholderText('nama@email.com') as HTMLInputElement;
+    const passwordInput = screen.getByPlaceholderText('••••••••') as HTMLInputElement;
+    fireEvent.change(emailInput, { target: { value: 'wrong@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'wrongpass' } });
+
+    const submitBtn = screen.getByRole('button', { name: /^Masuk$/i });
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
