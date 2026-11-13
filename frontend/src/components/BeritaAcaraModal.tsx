@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { X, Printer, Download } from 'lucide-react';
 import { PenyaluranTask } from '../context/AppContext';
 
@@ -17,7 +17,7 @@ export default function BeritaAcaraModal({ isOpen, onClose, task }: { isOpen: bo
         <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50 no-print">
           <h3 className="font-bold text-slate-900">Pratinjau Berita Acara</h3>
           <div className="flex gap-2">
-            <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-maun-600 rounded-lg text-sm font-bold text-white hover:bg-maun-700 transition-colors shadow-sm">
+            <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 rounded-lg text-sm font-bold text-white hover:bg-amaliah-700 transition-colors shadow-sm">
               <Printer className="w-4 h-4" /> Cetak PDF / Print
             </button>
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">
@@ -32,18 +32,18 @@ export default function BeritaAcaraModal({ isOpen, onClose, task }: { isOpen: bo
           {/* Kop Surat */}
           <div className="border-b-4 border-slate-900 pb-6 mb-8 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-maun-600 flex items-center justify-center text-white font-bold text-3xl shrink-0">
+              <div className="w-14 h-14 bg-amaliah-600 flex items-center justify-center text-white font-bold text-3xl shrink-0">
                 M
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">Maun Foundation</h1>
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">amaliah Foundation</h1>
                 <p className="text-sm font-semibold text-slate-600">Lembaga Amil Zakat Nasional</p>
               </div>
             </div>
             <div className="text-right text-xs text-slate-500 leading-relaxed">
               Jl. Kebaikan No. 99, Jakarta Selatan<br />
               Telp: (021) 555-0123<br />
-              Email: contact@maun.id | Web: www.maun.id
+              Email: contact@amaliah.id | Web: www.amaliah.id
             </div>
           </div>
 
@@ -73,7 +73,7 @@ export default function BeritaAcaraModal({ isOpen, onClose, task }: { isOpen: bo
                   <tr>
                     <td className="py-2 align-top font-bold text-slate-700">Nominal / Bentuk Bantuan</td>
                     <td className="py-2 align-top text-slate-400">:</td>
-                    <td className="py-2 align-top font-bold text-maun-700">{task.amount}</td>
+                    <td className="py-2 align-top font-bold text-amaliah-700">{task.amount}</td>
                   </tr>
                   <tr>
                     <td className="py-2 align-top font-bold text-slate-700">Catatan Kondisi Lapangan</td>
@@ -108,18 +108,18 @@ export default function BeritaAcaraModal({ isOpen, onClose, task }: { isOpen: bo
             <p className="mb-20">Mengetahui,<br/><span className="text-slate-500">(Admin Yayasan)</span></p>
             <div className="relative inline-block">
               {/* Fake stamp */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-[3px] border-maun-600/30 rounded-full w-28 h-28 -rotate-12 flex items-center justify-center pointer-events-none">
-                <div className="text-maun-600/30 font-black text-lg tracking-widest uppercase border-y-2 border-maun-600/30 py-1 px-2">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-[3px] border-amaliah-600/30 rounded-full w-28 h-28 -rotate-12 flex items-center justify-center pointer-events-none">
+                <div className="text-amaliah-600/30 font-black text-lg tracking-widest uppercase border-y-2 border-amaliah-600/30 py-1 px-2">
                   VERIFIED
                 </div>
               </div>
-              <p className="font-bold text-slate-900 underline underline-offset-4 text-base">Admin Pusat Maun</p>
+              <p className="font-bold text-slate-900 underline underline-offset-4 text-base">Admin Pusat amaliah</p>
             </div>
           </div>
           
           {/* Footer Text */}
           <div className="mt-16 pt-6 border-t border-slate-200 text-center text-xs text-slate-400 print:mt-12">
-            Dokumen ini dicetak secara otomatis dari Sistem Informasi MAUN pada {new Date().toLocaleDateString('id-ID')}
+            Dokumen ini dicetak secara otomatis dari Sistem Informasi amaliah pada {new Date().toLocaleDateString('id-ID')}
           </div>
 
         </div>

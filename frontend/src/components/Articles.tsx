@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { articlesData } from '../data';
+import { getStoredArticles } from '../data';
 
 export default function Articles() {
+  const articles = useMemo(() => getStoredArticles(), []);
+
   return (
     <section id="artikel" className="bg-slate-50 py-8 md:py-12 border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -12,13 +14,13 @@ export default function Articles() {
               Kabar & Edukasi Terbaru
             </h2>
           </div>
-          <button className="text-maun-600 font-medium text-sm flex items-center gap-1 hover:text-maun-700 transition-colors group">
+          <button className="text-emerald-700 font-medium text-sm flex items-center gap-1 hover:text-emerald-800 transition-colors group">
             Lihat Semua <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {articlesData.map(art => (
+          {articles.map(art => (
             <div key={art.id} className="bg-white rounded-2xl overflow-hidden border border-slate-200 hover:shadow-sm transition-shadow cursor-pointer">
               <div className="aspect-[16/9] overflow-hidden bg-slate-100">
                 <img src={art.imgUrl} alt={art.title} className="w-full h-full object-cover" />

@@ -11,6 +11,7 @@ import AdminHonor from './pages/AdminHonor';
 import AdminPengadaan from './pages/AdminPengadaan';
 import AdminLaporan from './pages/AdminLaporan';
 import AdminPengaturan from './pages/AdminPengaturan';
+import AdminArtikel from './pages/AdminArtikel';
 import {
   LayoutDashboard,
   LogOut,
@@ -25,6 +26,7 @@ import {
   FileText,
   Settings,
   Menu,
+  BookOpen,
 } from 'lucide-react';
 
 export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) {
@@ -46,6 +48,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
     { id: 'wakaf', label: 'Wakaf & Aset', icon: Landmark },
     { id: 'honor', label: 'Kepengurusan & Honor', icon: UserCog },
     { id: 'pengadaan', label: 'Pengadaan', icon: ShoppingCart },
+    { id: 'artikel', label: 'Artikel & Edukasi', icon: BookOpen },
     { id: 'laporan', label: 'Laporan & Transparansi', icon: FileText },
     { id: 'pengaturan', label: 'Pengaturan & Audit', icon: Settings },
   ];
@@ -85,7 +88,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
           {isSidebarOpen && (
             <div className="ml-3 min-w-0">
               <span className="font-bold text-slate-900 text-sm tracking-tight block truncate">Semarang Infak</span>
-              <span className="text-[10px] text-emerald-700 font-medium block truncate">Yayasan MAUN • Admin</span>
+              <span className="text-[10px] text-emerald-700 font-medium block truncate">Yayasan amaliah • Admin</span>
             </div>
           )}
         </div>
@@ -139,7 +142,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
             >
               <Menu className="w-5 h-5" />
             </button>
-            <h2 className="font-bold text-slate-800 hidden md:block">Yayasan Semarang Infak (MAUN)</h2>
+            <h2 className="font-bold text-slate-800 hidden md:block">Yayasan Semarang Infak (amaliah)</h2>
             <div className="h-4 w-px bg-slate-300 hidden md:block"></div>
             <span className="text-xs md:text-sm font-medium text-slate-500 truncate">
               Periode: {new Date().toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
@@ -171,6 +174,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
             <Route path="wakaf" element={<AdminWakaf />} />
             <Route path="honor" element={<AdminHonor />} />
             <Route path="pengadaan" element={<AdminPengadaan />} />
+            <Route path="artikel" element={<AdminArtikel />} />
             <Route path="laporan" element={<AdminLaporan />} />
             <Route path="pengaturan" element={<AdminPengaturan />} />
             <Route path="*" element={<Navigate to="/admin" replace />} />

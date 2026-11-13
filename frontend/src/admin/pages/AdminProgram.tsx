@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+﻿import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search,
   Plus,
@@ -43,7 +43,7 @@ export default function AdminProgram() {
     category: 'Infaq Terikat',
     targetAmount: '',
     remainingDays: '90',
-    organizer: 'Lembaga Infak MAUN Semarang',
+    organizer: 'Lembaga Infak amaliah Semarang',
     location: 'Kota Semarang & Jawa Tengah',
     description: '',
     image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',
@@ -133,7 +133,7 @@ export default function AdminProgram() {
         category: 'Infaq Terikat',
         targetAmount: '',
         remainingDays: '90',
-        organizer: 'Lembaga Infak MAUN Semarang',
+        organizer: 'Lembaga Infak amaliah Semarang',
         location: 'Kota Semarang & Jawa Tengah',
         description: '',
         image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',

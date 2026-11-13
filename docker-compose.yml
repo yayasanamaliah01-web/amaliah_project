@@ -4,7 +4,7 @@ services:
   # ==========================================
   loki:
     image: grafana/loki:3.0.0
-    container_name: maun-loki
+    container_name: amaliah-loki
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
@@ -13,34 +13,33 @@ services:
       - loki_data:/loki
     restart: unless-stopped
     networks:
-      - maun-network
+      - amaliah-network
 
   # ==========================================
   # 2. Promtail - Log Shipper & Collector
   # ==========================================
   promtail:
     image: grafana/promtail:3.0.0
-    container_name: maun-promtail
+    container_name: amaliah-promtail
     volumes:
       - ./monitoring/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
       - ./backend/logs:/var/log/app:ro
-      - ./payment gateway/logs:/var/log/app_bank:ro
       - /var/run/docker.sock:/var/run/docker.sock
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki
     restart: unless-stopped
     networks:
-      - maun-network
+      - amaliah-network
 
   # ==========================================
   # 3. Prometheus - Metrics Monitoring Engine
   # ==========================================
   prometheus:
     image: prom/prometheus:v2.54.1
-    container_name: maun-prometheus
+    container_name: amaliah-prometheus
     ports:
-      - "9091:9090" # Port 9091 di host (Port 9090 digunakan Bank Simulator)
+      - "9091:9090"
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -53,14 +52,14 @@ services:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
     networks:
-      - maun-network
+      - amaliah-network
 
   # ==========================================
   # 4. Grafana - Visualization & Dashboards
   # ==========================================
   grafana:
     image: grafana/grafana:11.2.0
-    container_name: maun-grafana
+    container_name: amaliah-grafana
     ports:
       - "3001:3000" # Port 3001 di host (Port 3000 digunakan Frontend React)
     environment:
@@ -75,14 +74,14 @@ services:
       - loki
     restart: unless-stopped
     networks:
-      - maun-network
+      - amaliah-network
 
   # ==========================================
   # 5. Jenkins - CI/CD Pipeline Automation
   # ==========================================
   jenkins:
     image: jenkins/jenkins:lts-jdk21
-    container_name: maun-jenkins
+    container_name: amaliah-jenkins
     ports:
       - "8080:8080" # Jenkins Web Console
       - "50000:50000" # Jenkins Agent Port
@@ -91,10 +90,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     networks:
-      - maun-network
+      - amaliah-network
 
 networks:
-  maun-network:
+  amaliah-network:
     driver: bridge
 
 volumes:

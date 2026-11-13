@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   api,
   API_BASE_URL,
@@ -56,16 +56,16 @@ export const AppContext = createContext<AppContextType>({} as any);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
-    const saved = localStorage.getItem('maun_user');
+    const saved = localStorage.getItem('amaliah_user');
     return saved ? JSON.parse(saved) : null;
   });
 
   const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('maun_token');
+    return localStorage.getItem('amaliah_token');
   });
 
   const [userRole, setUserRole] = useState<UserRole>(() => {
-    const saved = localStorage.getItem('maun_user');
+    const saved = localStorage.getItem('amaliah_user');
     if (saved) {
       const user = JSON.parse(saved);
       const roleMap: Record<string, UserRole> = {
@@ -205,8 +205,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       token: res.token,
     };
 
-    localStorage.setItem('maun_token', res.token);
-    localStorage.setItem('maun_user', JSON.stringify(user));
+    localStorage.setItem('amaliah_token', res.token);
+    localStorage.setItem('amaliah_user', JSON.stringify(user));
 
     setCurrentUser(user);
     setToken(res.token);
@@ -231,8 +231,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       token: res.token,
     };
 
-    localStorage.setItem('maun_token', res.token);
-    localStorage.setItem('maun_user', JSON.stringify(user));
+    localStorage.setItem('amaliah_token', res.token);
+    localStorage.setItem('amaliah_user', JSON.stringify(user));
 
     setCurrentUser(user);
     setToken(res.token);
@@ -247,8 +247,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const logout = () => {
-    localStorage.removeItem('maun_token');
-    localStorage.removeItem('maun_user');
+    localStorage.removeItem('amaliah_token');
+    localStorage.removeItem('amaliah_user');
     setCurrentUser(null);
     setToken(null);
     setUserRole('guest');

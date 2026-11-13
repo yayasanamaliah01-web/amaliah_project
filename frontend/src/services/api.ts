@@ -3,7 +3,7 @@ export const BANK_SIM_BASE_URL = 'http://localhost:9090';
 
 // Helper for HTTP requests
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const token = localStorage.getItem('maun_token');
+  const token = localStorage.getItem('amaliah_token');
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -82,6 +82,7 @@ export interface ApiDonation {
   qrisString?: string;
   qrCodeUrl?: string;
   vaNumber?: string;
+  paymentUrl?: string;
   paidAt?: string;
   expiresAt?: string;
   createdAt: string;
@@ -292,5 +293,17 @@ export const api = {
       const res = await fetch(`${BANK_SIM_BASE_URL}/sim/dashboard`);
       return res.json();
     },
+  },
+  xendit: {
+    simulateQr: (transactionId: string, amount: number) =>
+      request<any>('/xendit/simulate/qr-payment', {
+        method: 'POST',
+        body: JSON.stringify({ transactionId, amount }),
+      }),
+    simulateVa: (transactionId: string, amount: number) =>
+      request<any>('/xendit/simulate/va-payment', {
+        method: 'POST',
+        body: JSON.stringify({ transactionId, amount }),
+      }),
   },
 };

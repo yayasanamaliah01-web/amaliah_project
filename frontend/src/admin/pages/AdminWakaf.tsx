@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { MapPin, Plus, FileText, CheckCircle2, ArrowLeft, Download, Building2 } from 'lucide-react';
 
 export default function AdminWakaf() {
   const [selectedAsset, setSelectedAsset] = useState<any>(null);
 
   const wakafAssets = [
-    { id: 'WKF-001', name: 'Tanah Sawah 500m2', type: 'Tanah', value: 'Rp 250.000.000', nazhir: 'Yayasan MAUN', location: 'Desa Suka Maju', status: 'Produktif', date: '10 Jan 2025', donor: 'Bpk. H. Soleh' },
-    { id: 'WKF-002', name: 'Ruko 2 Lantai', type: 'Bangunan', value: 'Rp 800.000.000', nazhir: 'Yayasan MAUN', location: 'Jl. Merdeka No. 10', status: 'Produktif', date: '05 Mar 2024', donor: 'Keluarga Bpk. Anwar' },
-    { id: 'WKF-003', name: 'Ambulans APV', type: 'Kendaraan', value: 'Rp 150.000.000', nazhir: 'Yayasan MAUN', location: 'Klinik Umat', status: 'Digunakan', date: '12 Ags 2025', donor: 'Hamba Allah' },
+    { id: 'WKF-001', name: 'Tanah Sawah 500m2', type: 'Tanah', value: 'Rp 250.000.000', nazhir: 'Yayasan amaliah', location: 'Desa Suka Maju', status: 'Produktif', date: '10 Jan 2025', donor: 'Bpk. H. Soleh' },
+    { id: 'WKF-002', name: 'Ruko 2 Lantai', type: 'Bangunan', value: 'Rp 800.000.000', nazhir: 'Yayasan amaliah', location: 'Jl. Merdeka No. 10', status: 'Produktif', date: '05 Mar 2024', donor: 'Keluarga Bpk. Anwar' },
+    { id: 'WKF-003', name: 'Ambulans APV', type: 'Kendaraan', value: 'Rp 150.000.000', nazhir: 'Yayasan amaliah', location: 'Klinik Umat', status: 'Digunakan', date: '12 Ags 2025', donor: 'Hamba Allah' },
   ];
 
   if (selectedAsset) {
@@ -23,7 +23,7 @@ export default function AdminWakaf() {
                  <Building2 className="w-64 h-64" />
                </div>
                <div className="relative z-10">
-                 <div className="w-16 h-16 bg-maun-50 rounded-full flex items-center justify-center text-maun-600 mx-auto mb-4">
+                 <div className="w-16 h-16 bg-amaliah-50 rounded-full flex items-center justify-center text-amaliah-600 mx-auto mb-4">
                     <FileText className="w-8 h-8" />
                  </div>
                  <h2 className="text-2xl font-bold text-slate-900 uppercase tracking-widest mb-1">Sertifikat Wakaf</h2>
@@ -58,13 +58,13 @@ export default function AdminWakaf() {
                   </div>
                </div>
                
-               <div className="bg-maun-50 border border-maun-100 rounded-xl p-5 flex justify-between items-center">
+               <div className="bg-amaliah-50 border border-amaliah-100 rounded-xl p-5 flex justify-between items-center">
                   <div>
-                    <div className="text-[11px] font-bold text-maun-500 uppercase tracking-wider mb-1">Nilai Estimasi Aset</div>
-                    <div className="text-2xl font-bold text-maun-900">{selectedAsset.value}</div>
+                    <div className="text-[11px] font-bold text-amaliah-500 uppercase tracking-wider mb-1">Nilai Estimasi Aset</div>
+                    <div className="text-2xl font-bold text-amaliah-900">{selectedAsset.value}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[11px] font-bold text-maun-500 uppercase tracking-wider mb-1">Status Pemanfaatan</div>
+                    <div className="text-[11px] font-bold text-amaliah-500 uppercase tracking-wider mb-1">Status Pemanfaatan</div>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold bg-emerald-100 text-emerald-700">
                       <CheckCircle2 className="w-3.5 h-3.5" /> {selectedAsset.status}
                     </span>
@@ -73,7 +73,7 @@ export default function AdminWakaf() {
             </div>
             <div className="p-6 border-t border-slate-200 bg-slate-50 flex justify-between items-center">
                <span className="text-xs text-slate-500 font-medium">Dicetak pada: 26 Ags 2026</span>
-               <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+               <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
                  <Download className="w-4 h-4" /> Unduh Sertifikat PDF
                </button>
             </div>
@@ -90,7 +90,7 @@ export default function AdminWakaf() {
           <p className="text-sm text-slate-500 mt-1">Registrasi dan pemantauan status aset wakaf lembaga.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Register Aset
           </button>
         </div>
@@ -130,7 +130,7 @@ export default function AdminWakaf() {
                     </span>
                   </td>
                   <td className="p-4 text-center">
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); }} className="text-xs font-semibold text-maun-600 hover:text-maun-700 hover:underline">Sertifikat</button>
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedAsset(asset); }} className="text-xs font-semibold text-amaliah-600 hover:text-amaliah-700 hover:underline">Sertifikat</button>
                   </td>
                 </tr>
               ))}

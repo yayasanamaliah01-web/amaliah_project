@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   ArrowLeft,
   HeartHandshake,
@@ -24,7 +24,7 @@ export default function GalangDanaPage({ onBack }: { onBack: () => void }) {
     targetAmount: '',
     remainingDays: '60',
     location: 'Kota Semarang',
-    organizer: user?.name || 'Komunitas Kebaikan MAUN',
+    organizer: user?.name || 'Komunitas Kebaikan amaliah',
     description: '',
     image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80',
     isUrgent: false,

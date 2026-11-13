@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, Plus, Filter, FileText, CheckCircle2, AlertCircle, ArrowLeft, User, MapPin, Calendar, Heart } from 'lucide-react';
 
 export default function AdminMustahik() {
@@ -25,7 +25,7 @@ export default function AdminMustahik() {
                 <User className="w-10 h-10 text-slate-400" />
               </div>
               <h2 className="text-xl font-bold text-slate-900 mb-1">{selectedMustahik.name}</h2>
-              <div className="inline-flex px-2.5 py-1 bg-maun-50 text-maun-700 font-bold text-xs rounded-full uppercase tracking-wider mb-4">
+              <div className="inline-flex px-2.5 py-1 bg-amaliah-50 text-amaliah-700 font-bold text-xs rounded-full uppercase tracking-wider mb-4">
                 Asnaf: {selectedMustahik.asnaf}
               </div>
               
@@ -71,7 +71,7 @@ export default function AdminMustahik() {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
               <div className="p-5 border-b border-slate-200 flex justify-between items-center">
                 <h3 className="font-bold text-slate-900">Riwayat Bantuan</h3>
-                <button className="text-sm font-semibold text-maun-600 hover:underline">Tambah Bantuan</button>
+                <button className="text-sm font-semibold text-amaliah-600 hover:underline">Tambah Bantuan</button>
               </div>
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -114,7 +114,7 @@ export default function AdminMustahik() {
           <p className="text-sm text-slate-500 mt-1">Data penerima manfaat untuk menghindari duplikasi bantuan.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Tambah Mustahik
           </button>
         </div>
@@ -124,7 +124,7 @@ export default function AdminMustahik() {
         <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-50/50">
           <div className="relative w-full sm:w-72">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Cari NIK, Nama..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+            <input type="text" placeholder="Cari NIK, Nama..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
@@ -168,7 +168,7 @@ export default function AdminMustahik() {
                     )}
                   </td>
                   <td className="p-4 text-center">
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedMustahik(m); }} className="text-xs font-semibold text-maun-600 hover:text-maun-700 hover:underline">Profil</button>
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedMustahik(m); }} className="text-xs font-semibold text-amaliah-600 hover:text-amaliah-700 hover:underline">Profil</button>
                   </td>
                 </tr>
               ))}

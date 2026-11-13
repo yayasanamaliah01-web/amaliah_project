@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Settings, Shield, History, Users, ArrowLeft, Plus, Edit2, Trash2 } from 'lucide-react';
 
 export default function AdminPengaturan() {
@@ -16,7 +16,7 @@ export default function AdminPengaturan() {
             <h1 className="text-2xl font-bold text-slate-900">Role & Akses Pengguna</h1>
             <p className="text-sm text-slate-500 mt-1">Kelola daftar admin, bendahara, dan staf yayasan.</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Tambah Pengguna
           </button>
         </div>
@@ -35,7 +35,7 @@ export default function AdminPengaturan() {
               <tr className="hover:bg-slate-50/50 transition-colors">
                 <td className="p-4">
                   <div className="text-sm font-bold text-slate-900">Admin Utama</div>
-                  <div className="text-xs text-slate-500 mt-0.5">admin@maun.id</div>
+                  <div className="text-xs text-slate-500 mt-0.5">admin@amaliah.id</div>
                 </td>
                 <td className="p-4 text-sm font-semibold text-slate-700">
                   <span className="bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md text-xs border border-purple-100">Super Admin</span>
@@ -52,7 +52,7 @@ export default function AdminPengaturan() {
               <tr className="hover:bg-slate-50/50 transition-colors">
                 <td className="p-4">
                   <div className="text-sm font-bold text-slate-900">Bpk. H. Abdurrahman</div>
-                  <div className="text-xs text-slate-500 mt-0.5">ketua@maun.id</div>
+                  <div className="text-xs text-slate-500 mt-0.5">ketua@amaliah.id</div>
                 </td>
                 <td className="p-4 text-sm font-semibold text-slate-700">
                   <span className="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-xs border border-blue-100">Ketua Yayasan</span>
@@ -69,7 +69,7 @@ export default function AdminPengaturan() {
               <tr className="hover:bg-slate-50/50 transition-colors">
                 <td className="p-4">
                   <div className="text-sm font-bold text-slate-900">Siti Aisyah</div>
-                  <div className="text-xs text-slate-500 mt-0.5">bendahara@maun.id</div>
+                  <div className="text-xs text-slate-500 mt-0.5">bendahara@amaliah.id</div>
                 </td>
                 <td className="p-4 text-sm font-semibold text-slate-700">
                   <span className="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-md text-xs border border-amber-100">Bendahara</span>
@@ -101,32 +101,32 @@ export default function AdminPengaturan() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-maun-500 transition-colors group">
-          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-maun-50 group-hover:text-maun-600 transition-colors">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amaliah-500 transition-colors group">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-amaliah-50 group-hover:text-amaliah-600 transition-colors">
             <Settings className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-slate-900 mb-1">Master Data</h3>
           <p className="text-xs text-slate-500">Kategori dana, program, asnaf, akun kas.</p>
         </div>
         
-        <div onClick={() => setActiveMenu('users')} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-maun-500 transition-colors group">
-          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-maun-50 group-hover:text-maun-600 transition-colors">
+        <div onClick={() => setActiveMenu('users')} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amaliah-500 transition-colors group">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-amaliah-50 group-hover:text-amaliah-600 transition-colors">
             <Users className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-slate-900 mb-1">Role & Akses Pengguna</h3>
           <p className="text-xs text-slate-500">Atur admin, bendahara, ketua, dan auditor.</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-maun-500 transition-colors group">
-          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-maun-50 group-hover:text-maun-600 transition-colors">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amaliah-500 transition-colors group">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-amaliah-50 group-hover:text-amaliah-600 transition-colors">
             <History className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-slate-900 mb-1">Log Aktivitas</h3>
           <p className="text-xs text-slate-500">Jejak audit: siapa mengubah apa dan kapan.</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-maun-500 transition-colors group">
-          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-maun-50 group-hover:text-maun-600 transition-colors">
+        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:border-amaliah-500 transition-colors group">
+          <div className="w-10 h-10 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600 mb-3 group-hover:bg-amaliah-50 group-hover:text-amaliah-600 transition-colors">
             <Shield className="w-5 h-5" />
           </div>
           <h3 className="font-bold text-slate-900 mb-1">Periode Akuntansi</h3>

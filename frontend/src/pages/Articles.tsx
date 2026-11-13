@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ArrowLeft, Clock, BookOpen } from 'lucide-react';
+import { getStoredArticles } from '../data';
 
 interface ArticleItem {
   id: string;
@@ -61,14 +62,35 @@ const mockArticles: ArticleItem[] = [
   }
 ];
 
-const categories = ['Semua', 'Zakat & Infaq', 'Penyaluran', 'Wakaf', 'Inspirasi'];
+const categories = ['Semua', 'Zakat & Infaq', 'Penyaluran', 'Wakaf', 'Inspirasi', 'Fiqih & Fatwa Zakat', 'Kisah Santri & Pesantren'];
 
 export default function ArticlesPage({ onSelectArticle, onBack }: { onSelectArticle: (id: string) => void, onBack?: () => void }) {
   const [activeCategory, setActiveCategory] = useState<string>('Semua');
 
+  const allArticles: ArticleItem[] = useMemo(() => {
+    const stored = getStoredArticles().map((a) => ({
+      id: a.id,
+      title: a.title,
+      category: a.category,
+      excerpt: a.summary,
+      image: a.imgUrl,
+      date: a.date,
+    }));
+    // Gabungkan stored unik dengan mock
+    const map = new Map<string, ArticleItem>();
+    stored.forEach((item) => map.set(item.id, item));
+    mockArticles.forEach((item) => {
+      if (!map.has(item.id)) map.set(item.id, item);
+    });
+    return Array.from(map.values());
+  }, []);
+
   const filteredArticles = activeCategory === 'Semua'
-    ? mockArticles
-    : mockArticles.filter((article) => article.category === activeCategory);
+    ? allArticles
+    : allArticles.filter((article) =>
+        article.category.toLowerCase().includes(activeCategory.toLowerCase()) ||
+        activeCategory.toLowerCase().includes(article.category.toLowerCase())
+      );
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -100,8 +122,8 @@ export default function ArticlesPage({ onSelectArticle, onBack }: { onSelectArti
                   onClick={() => setActiveCategory(category)}
                   className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
                     isActive
-                      ? 'bg-maun-600 text-white border border-maun-600 shadow-sm'
-                      : 'bg-transparent border border-maun-600 text-maun-600 hover:bg-maun-50'
+                      ? 'bg-amaliah-600 text-white border border-amaliah-600 shadow-sm'
+                      : 'bg-transparent border border-amaliah-600 text-amaliah-600 hover:bg-amaliah-50'
                   }`}
                 >
                   {category}
@@ -119,7 +141,7 @@ export default function ArticlesPage({ onSelectArticle, onBack }: { onSelectArti
             <div 
               key={article.id}
               onClick={() => onSelectArticle(article.id)}
-              className="bg-white p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-maun-300 transition-all hover:shadow-xs flex gap-4 items-center group"
+              className="bg-white p-4 rounded-2xl border border-slate-200 cursor-pointer hover:border-amaliah-300 transition-all hover:shadow-xs flex gap-4 items-center group"
             >
               <div className="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100">
                 <img 
@@ -130,7 +152,7 @@ export default function ArticlesPage({ onSelectArticle, onBack }: { onSelectArti
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="text-[11px] font-medium text-maun-700 bg-maun-50 border border-maun-100 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-medium text-amaliah-700 bg-amaliah-50 border border-amaliah-100 px-2 py-0.5 rounded-full">
                     {article.category}
                   </span>
                   <div className="flex items-center gap-1 text-xs text-slate-400">
@@ -138,7 +160,7 @@ export default function ArticlesPage({ onSelectArticle, onBack }: { onSelectArti
                     <span>{article.date}</span>
                   </div>
                 </div>
-                <h2 className="font-semibold text-slate-800 text-sm md:text-base leading-snug mb-1.5 line-clamp-2 group-hover:text-maun-700 transition-colors">
+                <h2 className="font-semibold text-slate-800 text-sm md:text-base leading-snug mb-1.5 line-clamp-2 group-hover:text-amaliah-700 transition-colors">
                   {article.title}
                 </h2>
                 <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">

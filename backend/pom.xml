@@ -8,10 +8,10 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>id.maun.backend</groupId>
-	<artifactId>maun-backend</artifactId>
+	<groupId>id.amaliah.backend</groupId>
+	<artifactId>amaliah-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>MaunBackend</name>
+	<name>AmaliahBackend</name>
 	<description/>
 	<url/>
 	<licenses>

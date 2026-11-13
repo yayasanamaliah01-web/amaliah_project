@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { UserCog, Plus, CheckCircle2 } from 'lucide-react';
 
 export default function AdminHonor() {
@@ -25,7 +25,7 @@ export default function AdminHonor() {
           <p className="text-sm text-slate-500 mt-1">Daftar petugas dan manajemen pembayaran honor bulanan.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Bayar Massal
           </button>
         </div>
@@ -66,7 +66,7 @@ export default function AdminHonor() {
                 </td>
                 <td className="p-4 text-center">
                   {s.status === 'Belum Dibayar' ? (
-                     <button onClick={() => toggleStatus(s.id)} className="text-xs font-semibold text-maun-600 hover:text-maun-700 hover:underline">Bayar Sekarang</button>
+                     <button onClick={() => toggleStatus(s.id)} className="text-xs font-semibold text-amaliah-600 hover:text-amaliah-700 hover:underline">Bayar Sekarang</button>
                   ) : (
                      <button onClick={() => toggleStatus(s.id)} className="text-xs font-semibold text-slate-400 hover:text-slate-600 hover:underline">Batalkan</button>
                   )}

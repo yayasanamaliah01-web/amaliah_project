@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ArrowLeft, Share2, Bookmark, Clock } from 'lucide-react';
 
 export default function ArticleDetailPage({ id, onBack }: { id: string, onBack: () => void }) {
@@ -18,7 +18,7 @@ export default function ArticleDetailPage({ id, onBack }: { id: string, onBack: 
     `,
     image: 'https://images.unsplash.com/photo-1593113565214-80afcb4dd16c?auto=format&fit=crop&w=1200&q=80',
     date: '20 Okt 2026',
-    author: 'Tim Redaksi MAUN'
+    author: 'Tim Redaksi amaliah'
   };
 
   return (
@@ -43,7 +43,7 @@ export default function ArticleDetailPage({ id, onBack }: { id: string, onBack: 
         </div>
         
         <div className="p-5 sm:p-8">
-          <div className="flex items-center gap-3 text-xs font-medium text-maun-600 mb-3 uppercase tracking-wider">
+          <div className="flex items-center gap-3 text-xs font-medium text-amaliah-600 mb-3 uppercase tracking-wider">
             <span>Inspirasi</span>
             <span className="w-1 h-1 rounded-full bg-slate-300"></span>
             <span className="text-slate-500 flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {article.date}</span>
@@ -54,7 +54,7 @@ export default function ArticleDetailPage({ id, onBack }: { id: string, onBack: 
           </h1>
           
           <div className="flex items-center gap-3 mb-8 pb-8 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-full bg-maun-100 flex items-center justify-center text-maun-700 font-bold">
+            <div className="w-10 h-10 rounded-full bg-amaliah-100 flex items-center justify-center text-amaliah-700 font-bold">
               M
             </div>
             <div>

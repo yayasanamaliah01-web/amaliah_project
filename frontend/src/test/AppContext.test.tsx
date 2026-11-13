@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import React from 'react';
 import { AppProvider, useAppContext } from '../context/AppContext';
@@ -55,8 +55,8 @@ describe('AppContext Unit Tests', () => {
       email: 'admin@amaliah.id',
       role: 'ADMIN',
     };
-    localStorage.setItem('maun_user', JSON.stringify(savedUser));
-    localStorage.setItem('maun_token', 'saved-jwt-123');
+    localStorage.setItem('amaliah_user', JSON.stringify(savedUser));
+    localStorage.setItem('amaliah_token', 'saved-jwt-123');
 
     const { result } = renderHook(() => useAppContext(), { wrapper });
 
@@ -100,7 +100,7 @@ describe('AppContext Unit Tests', () => {
     expect(result.current.token).toBe('jwt-token-login');
     expect(result.current.currentUser?.name).toBe('Budi Donatur');
     expect(result.current.userRole).toBe('user');
-    expect(localStorage.getItem('maun_token')).toBe('jwt-token-login');
+    expect(localStorage.getItem('amaliah_token')).toBe('jwt-token-login');
   });
 
   it('should handle register and update user and token', async () => {
@@ -137,8 +137,8 @@ describe('AppContext Unit Tests', () => {
   });
 
   it('should handle logout and clear state and localStorage', async () => {
-    localStorage.setItem('maun_token', 'token-to-be-cleared');
-    localStorage.setItem('maun_user', JSON.stringify({ name: 'User' }));
+    localStorage.setItem('amaliah_token', 'token-to-be-cleared');
+    localStorage.setItem('amaliah_user', JSON.stringify({ name: 'User' }));
 
     const { result } = renderHook(() => useAppContext(), { wrapper });
 
@@ -153,8 +153,8 @@ describe('AppContext Unit Tests', () => {
     expect(result.current.currentUser).toBeNull();
     expect(result.current.token).toBeNull();
     expect(result.current.userRole).toBe('guest');
-    expect(localStorage.getItem('maun_token')).toBeNull();
-    expect(localStorage.getItem('maun_user')).toBeNull();
+    expect(localStorage.getItem('amaliah_token')).toBeNull();
+    expect(localStorage.getItem('amaliah_user')).toBeNull();
   });
 
   it('should update task status and details via updateTask', async () => {

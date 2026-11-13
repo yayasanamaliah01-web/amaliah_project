@@ -51,7 +51,7 @@ export const articlesData: Article[] = [
     slug: 'lansia-pekerja',
     title: 'Lansia Pekerja',
     category: 'Kisah Berdampak',
-    author: 'Tim Syariah MAUN',
+    author: 'Tim Syariah amaliah',
     date: '16 Agustus 2026',
     readTime: '5 min baca',
     imgUrl: 'https://images.unsplash.com/photo-1544448777-62283e3c0429?auto=format&fit=crop&w=400&q=80',
@@ -64,12 +64,20 @@ export const articlesData: Article[] = [
     slug: 'panduan-lengkap-zakat-mal',
     title: 'Panduan Lengkap Zakat Mal & Zakat Penghasilan Menurut Ketentuan BAZNAS & MUI',
     category: 'Edukasi Zakat',
-    author: 'Tim Syariah MAUN',
+    author: 'Tim Syariah amaliah',
     date: '16 Agustus 2026',
     readTime: '5 min baca',
     imgUrl: 'https://images.unsplash.com/photo-1604594849809-dfedbc827105?auto=format&fit=crop&w=400&q=80',
     summary: 'Pahami perhitungan nisab bulanan setara 85gr emas, cara menghitung 2.5% penghasilan bersih, serta 8 golongan asnaf penerima zakat.',
     content: 'Zakat merupakan salah satu rukun Islam...',
-    categoryColor: 'bg-maun-100 text-maun-800'
+    categoryColor: 'bg-emerald-100 text-emerald-800'
   }
 ];
+
+export const getStoredArticles = (): Article[] => {
+  try {
+    const saved = localStorage.getItem('amaliah_articles');
+    if (saved) return JSON.parse(saved);
+  } catch (_) {}
+  return articlesData;
+};

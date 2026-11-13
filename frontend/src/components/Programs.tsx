@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { BadgeCheck, Heart } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { programsData } from '../data';
@@ -110,7 +110,7 @@ export default function Programs({ onSelectProgram }: { onSelectProgram: (id: st
                 </h3>
 
                 <div className="flex items-center gap-1.5 mb-2.5 text-[10px] md:text-xs text-slate-500 font-normal">
-                  <span>MAUN Verified</span>
+                  <span>amaliah Verified</span>
                   <BadgeCheck className="w-3.5 h-3.5 text-emerald-600 fill-emerald-50" />
                 </div>
 

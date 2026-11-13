@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { FileText, Download, Printer, ArrowLeft, Calendar, Filter } from 'lucide-react';
 
 export default function AdminLaporan() {
@@ -22,13 +22,13 @@ export default function AdminLaporan() {
           <div className="p-6 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/50">
             <div>
               <h2 className="text-xl font-bold text-slate-900">{selectedReport.title}</h2>
-              <p className="text-sm text-slate-500 mt-1">Yayasan MAUN Indonesia</p>
+              <p className="text-sm text-slate-500 mt-1">Yayasan amaliah Indonesia</p>
             </div>
             <div className="flex gap-2">
               <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
                 <Printer className="w-4 h-4" /> Cetak
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
                 <Download className="w-4 h-4" /> Unduh PDF
               </button>
             </div>
@@ -48,7 +48,7 @@ export default function AdminLaporan() {
             {/* Mockup of Financial Statement */}
             <div className="min-w-[600px]">
               <div className="text-center mb-8">
-                <h3 className="font-bold text-lg text-slate-900">YAYASAN MAUN INDONESIA</h3>
+                <h3 className="font-bold text-lg text-slate-900">YAYASAN amaliah INDONESIA</h3>
                 <h4 className="font-bold text-md text-slate-800 uppercase">{selectedReport.title}</h4>
                 <p className="text-sm text-slate-600">Per 31 Agustus 2026 dan 2025</p>
                 <p className="text-xs text-slate-500 italic">(Dinyatakan dalam Rupiah)</p>
@@ -127,7 +127,7 @@ export default function AdminLaporan() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reports.map(rep => (
-          <div key={rep.id} onClick={() => setSelectedReport(rep)} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-maun-300 transition-all flex items-start gap-4 cursor-pointer">
+          <div key={rep.id} onClick={() => setSelectedReport(rep)} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amaliah-300 transition-all flex items-start gap-4 cursor-pointer">
             <div className="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
               <FileText className="w-6 h-6" />
             </div>
@@ -138,7 +138,7 @@ export default function AdminLaporan() {
                 <button onClick={(e) => { e.stopPropagation(); setSelectedReport(rep); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded border border-slate-200 transition-colors">
                   <Printer className="w-3.5 h-3.5" /> Lihat Preview
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-maun-50 hover:bg-maun-100 text-maun-700 text-xs font-semibold rounded border border-maun-200 transition-colors">
+                <button onClick={(e) => { e.stopPropagation(); }} className="flex items-center gap-1.5 px-3 py-1.5 bg-amaliah-50 hover:bg-amaliah-100 text-amaliah-700 text-xs font-semibold rounded border border-amaliah-200 transition-colors">
                   <Download className="w-3.5 h-3.5" /> Export PDF
                 </button>
               </div>

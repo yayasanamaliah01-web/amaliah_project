@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, Plus, Filter, Download, FileText, CheckCircle2, ArrowLeft, Printer, User, Wallet, Save } from 'lucide-react';
 
 export default function AdminPenerimaan() {
@@ -41,15 +41,15 @@ export default function AdminPenerimaan() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Tanggal Terima</label>
-                <input type="date" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="date" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nama Donatur</label>
-                <input type="text" placeholder="Contoh: Hamba Allah" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="text" placeholder="Contoh: Hamba Allah" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Metode Bayar (Sumber)</label>
-                <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500">
+                <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500">
                   <option>Transfer Bank</option>
                   <option>QRIS</option>
                   <option>Kotak Amal</option>
@@ -58,7 +58,7 @@ export default function AdminPenerimaan() {
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nominal (Rp)</label>
-                <input type="number" placeholder="0" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="number" placeholder="0" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
             </div>
 
@@ -67,7 +67,7 @@ export default function AdminPenerimaan() {
               
               <div className="flex gap-4 mb-6">
                 {['Zakat', 'Wakaf', 'Infaq'].map((type) => (
-                  <label key={type} className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.type === type ? 'border-maun-500 bg-maun-50 text-maun-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                  <label key={type} className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.type === type ? 'border-amaliah-500 bg-amaliah-50 text-amaliah-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
                     <input type="radio" name="danaType" value={type} className="hidden" checked={formData.type === type} onChange={(e) => setFormData({...formData, type: e.target.value})} />
                     <span className="font-bold text-sm">{type}</span>
                   </label>
@@ -79,7 +79,7 @@ export default function AdminPenerimaan() {
                 {formData.type === 'Zakat' && (
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Pilih Asnaf (Golongan Penerima)</label>
-                    <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500">
+                    <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500">
                       <option>Fakir</option>
                       <option>Miskin</option>
                       <option>Amil</option>
@@ -95,7 +95,7 @@ export default function AdminPenerimaan() {
                 {formData.type === 'Wakaf' && (
                   <div>
                     <label className="block text-sm font-bold text-slate-700 mb-2">Jenis Aset Wakaf</label>
-                    <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500">
+                    <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500">
                       <option>Wakaf Uang</option>
                       <option>Wakaf Tanah</option>
                       <option>Wakaf Bangunan / Masjid</option>
@@ -113,13 +113,13 @@ export default function AdminPenerimaan() {
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" className="sr-only peer" checked={formData.isBound} onChange={(e) => setFormData({...formData, isBound: e.target.checked})} />
-                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-maun-600"></div>
+                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amaliah-600"></div>
                       </label>
                     </div>
                     {formData.isBound && (
                       <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Tujuan Spesifik (Program/Kegiatan)</label>
-                        <input type="text" placeholder="Contoh: Renovasi Masjid At-Taqwa, Bantuan Anak Yatim" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                        <input type="text" placeholder="Contoh: Renovasi Masjid At-Taqwa, Bantuan Anak Yatim" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
                       </div>
                     )}
                   </div>
@@ -129,7 +129,7 @@ export default function AdminPenerimaan() {
             
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Catatan Tambahan (Opsional)</label>
-              <textarea rows={3} className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500"></textarea>
+              <textarea rows={3} className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500"></textarea>
             </div>
           </div>
           
@@ -137,7 +137,7 @@ export default function AdminPenerimaan() {
             <button onClick={() => setIsAdding(false)} className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Batal
             </button>
-            <button onClick={() => setIsAdding(false)} className="flex items-center gap-2 px-6 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+            <button onClick={() => setIsAdding(false)} className="flex items-center gap-2 px-6 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
               <Save className="w-4 h-4" /> Simpan Data
             </button>
           </div>
@@ -162,7 +162,7 @@ export default function AdminPenerimaan() {
               <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
                 <Printer className="w-4 h-4" /> Cetak
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
                 <Download className="w-4 h-4" /> Unduh PDF
               </button>
             </div>
@@ -171,11 +171,11 @@ export default function AdminPenerimaan() {
           <div className="p-8">
             <div className="flex items-center justify-between border-b border-dashed border-slate-200 pb-6 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-maun-50 rounded-full flex items-center justify-center text-maun-600">
+                <div className="w-12 h-12 bg-amaliah-50 rounded-full flex items-center justify-center text-amaliah-600">
                   <span className="font-bold text-xl">M</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900">Yayasan MAUN Indonesia</h3>
+                  <h3 className="font-bold text-slate-900">Yayasan amaliah Indonesia</h3>
                   <p className="text-xs text-slate-500">Jl. Kebaikan No. 99, Jakarta</p>
                 </div>
               </div>
@@ -202,9 +202,9 @@ export default function AdminPenerimaan() {
                 </div>
               </div>
 
-              <div className="bg-maun-50 border border-maun-100 rounded-xl p-6">
-                 <div className="text-[11px] font-bold text-maun-500 uppercase tracking-wider mb-2">Sebesar Nominal</div>
-                 <div className="text-3xl font-bold text-maun-900 tabular-nums">{selectedTrx.amount}</div>
+              <div className="bg-amaliah-50 border border-amaliah-100 rounded-xl p-6">
+                 <div className="text-[11px] font-bold text-amaliah-500 uppercase tracking-wider mb-2">Sebesar Nominal</div>
+                 <div className="text-3xl font-bold text-amaliah-900 tabular-nums">{selectedTrx.amount}</div>
               </div>
 
               <div>
@@ -242,7 +242,7 @@ export default function AdminPenerimaan() {
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
             <Download className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Catat Penerimaan
           </button>
         </div>
@@ -252,7 +252,7 @@ export default function AdminPenerimaan() {
         <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-50/50">
           <div className="relative w-full sm:w-72">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Cari nama, no bukti..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+            <input type="text" placeholder="Cari nama, no bukti..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
@@ -293,7 +293,7 @@ export default function AdminPenerimaan() {
                     </span>
                   </td>
                   <td className="p-4 text-center">
-                    <button onClick={(e) => { e.stopPropagation(); setSelectedTrx(trx); }} className="p-2 text-slate-400 hover:text-maun-600 hover:bg-maun-50 rounded-lg transition-colors" title="Lihat Kuitansi">
+                    <button onClick={(e) => { e.stopPropagation(); setSelectedTrx(trx); }} className="p-2 text-slate-400 hover:text-amaliah-600 hover:bg-amaliah-50 rounded-lg transition-colors" title="Lihat Kuitansi">
                       <FileText className="w-4 h-4" />
                     </button>
                   </td>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, CheckCircle2, Clock } from 'lucide-react';
 
 const mockHistory = [
@@ -57,8 +57,8 @@ export default function ImpactPage({ onSelectImpact }: { onSelectImpact: (id: st
                   onClick={() => setFilter(f)}
                   className={`px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap cursor-pointer ${
                     isActive 
-                      ? 'bg-maun-600 text-white border border-maun-600 shadow-sm' 
-                      : 'bg-transparent border border-maun-600 text-maun-600 hover:bg-maun-50'
+                      ? 'bg-amaliah-600 text-white border border-amaliah-600 shadow-sm' 
+                      : 'bg-transparent border border-amaliah-600 text-amaliah-600 hover:bg-amaliah-50'
                   }`}
                 >
                   {f}
@@ -76,7 +76,7 @@ export default function ImpactPage({ onSelectImpact }: { onSelectImpact: (id: st
             <div 
               key={item.id} 
               onClick={() => onSelectImpact(item.id)}
-              className="bg-white p-4 border border-slate-200 rounded-2xl cursor-pointer group hover:border-maun-300 transition-colors flex gap-4 items-center"
+              className="bg-white p-4 border border-slate-200 rounded-2xl cursor-pointer group hover:border-amaliah-300 transition-colors flex gap-4 items-center"
             >
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden shrink-0 bg-slate-100">
                 <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />

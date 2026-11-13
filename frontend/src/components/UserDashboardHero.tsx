@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 
 const banners = [
   {
@@ -55,7 +55,7 @@ export default function UserDashboardHero({ setActivePage }: { setActivePage: (p
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/50 to-transparent flex flex-col justify-center p-5 md:p-10">
-                  <span className="hidden md:inline-flex bg-maun-600 text-white text-[9px] md:text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wide self-start mb-2">
+                  <span className="hidden md:inline-flex bg-amaliah-600 text-white text-[9px] md:text-xs font-semibold px-2 py-1 rounded-md uppercase tracking-wide self-start mb-2">
                     {banner.badge}
                   </span>
                   <h3 className="text-lg sm:text-xl md:text-3xl font-semibold text-white mb-1.5 md:mb-3 max-w-[250px] sm:max-w-[350px] md:max-w-[450px] leading-snug">

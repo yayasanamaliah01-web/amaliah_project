@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ArrowLeft, MapPin, CheckCircle2, Calendar, User, Clock, Image as ImageIcon } from 'lucide-react';
 
 export default function ImpactDetailPage({ id, onBack }: { id: string, onBack: () => void }) {
@@ -63,11 +63,11 @@ export default function ImpactDetailPage({ id, onBack }: { id: string, onBack: (
           
           <div className="space-y-3 mb-5">
             <div className="flex items-start gap-2 text-sm text-slate-600">
-              <MapPin className="w-4 h-4 text-maun-500 mt-0.5 flex-shrink-0" />
+              <MapPin className="w-4 h-4 text-amaliah-500 mt-0.5 flex-shrink-0" />
               <span><span className="font-medium text-slate-700">Lokasi:</span> {detail.location}</span>
             </div>
             <div className="flex items-start gap-2 text-sm text-slate-600">
-              <User className="w-4 h-4 text-maun-500 mt-0.5 flex-shrink-0" />
+              <User className="w-4 h-4 text-amaliah-500 mt-0.5 flex-shrink-0" />
               <span><span className="font-medium text-slate-700">Penerima Manfaat:</span> {detail.beneficiaries}</span>
             </div>
           </div>

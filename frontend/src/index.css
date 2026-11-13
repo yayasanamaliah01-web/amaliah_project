@@ -1,14 +1,14 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
-  --color-maun-50: #ECFDF5;
-  --color-maun-100: #D1FAE5;
-  --color-maun-200: #A7F3D0;
-  --color-maun-500: #10A878;
-  --color-maun-600: #087A4F;
-  --color-maun-700: #0B5D3B;
-  --color-maun-800: #075B3A;
-  --color-maun-900: #06452D;
+  --color-amaliah-50: #ECFDF5;
+  --color-amaliah-100: #D1FAE5;
+  --color-amaliah-200: #A7F3D0;
+  --color-amaliah-500: #10A878;
+  --color-amaliah-600: #087A4F;
+  --color-amaliah-700: #0B5D3B;
+  --color-amaliah-800: #075B3A;
+  --color-amaliah-900: #06452D;
 }
 
 @layer base {

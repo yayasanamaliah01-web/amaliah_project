@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, Heart, QrCode, CreditCard, CheckCircle, ArrowRight, Sparkles, RefreshCw } from 'lucide-react';
 import { api, ApiDonation } from '../services/api';
 import { useAppContext } from '../context/AppContext';
@@ -134,7 +134,7 @@ export function CheckoutModal({
       isOpen={isOpen}
       onClose={handleClose}
       title={step === 'payment' ? 'Pembayaran Donasi' : step === 'success' ? 'Donasi Berhasil!' : 'Infaq & Donasi'}
-      subtitle={programTitle || 'Yayasan Semarang Infak (MAUN)'}
+      subtitle={programTitle || 'Yayasan Semarang Infak (amaliah)'}
     >
       {/* STEP 1: DONATION FORM */}
       {step === 'form' && (
@@ -309,7 +309,7 @@ export function CheckoutModal({
                   <QrCode className="w-16 h-16" />
                 </div>
               )}
-              <div className="text-[11px] font-bold text-slate-700 mt-2">NMID: ID102026MAUN01</div>
+              <div className="text-[11px] font-bold text-slate-700 mt-2">NMID: ID102026amaliah01</div>
               <div className="text-[10px] text-slate-500">Scan dengan aplikasi Mobile Banking atau E-Wallet apa saja</div>
             </div>
           ) : (
@@ -318,7 +318,7 @@ export function CheckoutModal({
               <div className="text-xl font-mono font-black text-slate-900 tracking-wider my-1">
                 {donationData.vaNumber || '998877112233'}
               </div>
-              <div className="text-[11px] text-slate-500">Atas Nama: <strong>MAUN - {donationData.donorName}</strong></div>
+              <div className="text-[11px] text-slate-500">Atas Nama: <strong>amaliah - {donationData.donorName}</strong></div>
             </div>
           )}
 

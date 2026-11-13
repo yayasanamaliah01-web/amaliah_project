@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { api, API_BASE_URL } from '../services/api';
 
 describe('API Service Unit Tests', () => {
@@ -16,7 +16,7 @@ describe('API Service Unit Tests', () => {
 
   describe('request helper & headers', () => {
     it('should include Authorization header when token exists in localStorage', async () => {
-      localStorage.setItem('maun_token', 'test-jwt-token-123');
+      localStorage.setItem('amaliah_token', 'test-jwt-token-123');
 
       (global.fetch as any).mockResolvedValueOnce({
         ok: true,

@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ShieldCheck, FileSearch, CheckCircle2 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -50,7 +50,7 @@ export default function Features() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center max-w-2xl mx-auto mb-12 md:mb-16"
         >
-          <h2 className="text-2xl md:text-3xl font-semibold md:font-bold text-slate-900 mb-4 tracking-tight">Mengapa Berbagi Melalui MAUN?</h2>
+          <h2 className="text-2xl md:text-3xl font-semibold md:font-bold text-slate-900 mb-4 tracking-tight">Mengapa Berbagi Melalui amaliah?</h2>
           <p className="text-sm md:text-base text-slate-600">
             Kami memastikan setiap niat baikmu tersalurkan dengan aman, mudah, dan penuh makna.
           </p>
@@ -67,7 +67,7 @@ export default function Features() {
             const Icon = pillar.icon;
             return (
               <motion.div variants={itemVariants} key={pillar.id} className="bg-slate-50 p-6 md:p-8 rounded-3xl border border-slate-100 flex flex-col items-start hover:shadow-sm transition-shadow">
-                <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center mb-6 shadow-sm text-maun-600">
+                <div className="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center mb-6 shadow-sm text-amaliah-600">
                   <Icon className="w-6 h-6 stroke-[1.5]" />
                 </div>
                 <h3 className="text-base font-semibold text-slate-900 mb-3">{pillar.title}</h3>

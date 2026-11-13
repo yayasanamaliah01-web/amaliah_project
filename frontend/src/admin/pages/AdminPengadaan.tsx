@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { ShoppingCart, Plus, CheckCircle2, Clock, ArrowLeft, Download } from 'lucide-react';
 
 export default function AdminPengadaan() {
@@ -57,7 +57,7 @@ export default function AdminPengadaan() {
             <div>
                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Lampiran (Quotation)</div>
                <button className="flex items-center gap-2 px-4 py-3 border border-slate-200 hover:bg-slate-50 rounded-lg w-full text-left transition-colors">
-                 <div className="w-8 h-8 rounded bg-maun-50 flex items-center justify-center text-maun-600 shrink-0"><Download className="w-4 h-4" /></div>
+                 <div className="w-8 h-8 rounded bg-amaliah-50 flex items-center justify-center text-amaliah-600 shrink-0"><Download className="w-4 h-4" /></div>
                  <div>
                    <div className="text-sm font-bold text-slate-900">Quotation_{selectedReq.vendor.replace(/\s+/g, '')}.pdf</div>
                    <div className="text-xs text-slate-500">PDF Document • 1.2 MB</div>
@@ -78,7 +78,7 @@ export default function AdminPengadaan() {
           <p className="text-sm text-slate-500 mt-1">Kelola pengajuan pembelian untuk kebutuhan operasional atau program.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Ajukan Pengadaan
           </button>
         </div>
@@ -119,7 +119,7 @@ export default function AdminPengadaan() {
                   )}
                 </td>
                 <td className="p-4 text-center">
-                  <button onClick={(e) => { e.stopPropagation(); setSelectedReq(r); }} className="text-xs font-semibold text-maun-600 hover:text-maun-700 hover:underline">Detail</button>
+                  <button onClick={(e) => { e.stopPropagation(); setSelectedReq(r); }} className="text-xs font-semibold text-amaliah-600 hover:text-amaliah-700 hover:underline">Detail</button>
                 </td>
               </tr>
             ))}

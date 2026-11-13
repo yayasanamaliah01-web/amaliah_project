@@ -125,30 +125,14 @@ export default function PembayaranPage() {
     setErrorMsg(null);
 
     try {
-      // 1. Cobakan endpoint bank simulator jika tersedia
-      try {
-        await api.bankSim.payQris(donationData.transactionId, donationData.amount);
-      } catch (simErr) {
-        console.warn('Bank simulator endpoint skipped, notifying backend directly', simErr);
+      // 1. Panggil endpoint simulasi resmi Xendit di backend
+      if (donationData.paymentMethod === 'QRIS') {
+        await api.xendit.simulateQr(donationData.transactionId, donationData.amount);
+      } else {
+        await api.xendit.simulateVa(donationData.transactionId, donationData.amount);
       }
 
-      // 2. Kirim Webhook callback langsung ke backend untuk memastikan status berubah jadi SUCCESS & mutasi kas tercatat
-      try {
-        await fetch(`${API_BASE_URL}/bank-callback/notify`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            transactionId: 'BNK-SIM-' + Date.now(),
-            paymentType: donationData.paymentMethod || 'QRIS',
-            additionalInfo: { orderId: donationData.transactionId },
-            amount: { value: String(donationData.amount), currency: 'IDR' },
-          }),
-        });
-      } catch (cbErr) {
-        console.warn('Callback direct trigger error', cbErr);
-      }
-
-      // 3. Berikan jeda sejenak untuk sinkronisasi DB
+      // 2. Berikan jeda sejenak untuk sinkronisasi DB
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       let updatedRecord: ApiDonation = donationData;
@@ -169,7 +153,7 @@ export default function PembayaranPage() {
       await refreshAllData();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err: any) {
-      // Jika terjadi kendala jaringan, tetap arahkan ke kuitansi sukses
+      // Fallback kuitansi jika offline testing
       const fallback: ApiDonation = {
         ...donationData,
         status: 'SUCCESS',
@@ -485,14 +469,38 @@ export default function PembayaranPage() {
               </div>
             )}
 
+            {/* Tombol Portal Resmi Xendit Invoice (Jika Tersedia) */}
+            {donationData.paymentUrl && (
+              <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800 rounded-2xl p-4 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
+                    <Sparkles className="w-3.5 h-3.5" /> Portal Pembayaran Xendit
+                  </div>
+                  <div className="text-sm font-bold mt-0.5">Bayar Melalui Xendit Checkout</div>
+                  <p className="text-[11px] text-emerald-100/90">
+                    Buka halaman pembayaran resmi Xendit dengan beragam pilihan metode (QRIS, VA Bank, Kartu, e-Wallet).
+                  </p>
+                </div>
+                <a
+                  href={donationData.paymentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-white text-emerald-800 hover:bg-emerald-50 px-4 py-2.5 rounded-xl font-bold text-xs shrink-0 transition-colors shadow-xs"
+                >
+                  <span>Buka Xendit</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            )}
+
             {/* Simulasi Pembayaran Sandbox */}
             <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200/70 space-y-2.5">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-900">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>Simulasi Integrasi Bank (Testing Mode)</span>
+                <span>Simulasi Pembayaran Xendit Sandbox (Testing Mode)</span>
               </div>
               <p className="text-[11px] text-slate-600 leading-relaxed">
-                Anda dapat menguji transaksi ini sekarang untuk memicu callback BI-SNAP dan mencatat dana ke kas program.
+                Uji coba alur transaksi seketika tanpa transfer riil. Sistem akan memicu simulasi API Xendit dan otomatis mencatat dana ke kas donasi serta menyiarkan update real-time.
               </p>
               <button
                 type="button"
@@ -503,12 +511,12 @@ export default function PembayaranPage() {
                 {isSimulatingBankPay ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Memproses Notifikasi Bank...</span>
+                    <span>Memproses Simulasi Xendit...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Bayar Sekarang (Simulasi Sukses)</span>
+                    <span>Simulasikan Pembayaran Berhasil</span>
                   </>
                 )}
               </button>

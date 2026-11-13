@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Heart, Wallet, HeartHandshake, Sprout, Gift } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -50,8 +50,8 @@ export default function SimpleCategoryGrid({ setActivePage }: { setActivePage: (
             const Icon = cat.icon;
             return (
               <motion.div variants={itemVariants} key={cat.id} className="flex flex-col items-center cursor-pointer group flex-shrink-0 w-[60px] md:w-[80px]" onClick={cat.action}>
-                <div className="w-[50px] h-[50px] md:w-16 md:h-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-2 transition-transform group-hover:scale-105 hover:bg-maun-50 hover:border-maun-200">
-                  <Icon className="w-6 h-6 md:w-7 md:h-7 stroke-[1.5] text-maun-600" />
+                <div className="w-[50px] h-[50px] md:w-16 md:h-16 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-2 transition-transform group-hover:scale-105 hover:bg-amaliah-50 hover:border-amaliah-200">
+                  <Icon className="w-6 h-6 md:w-7 md:h-7 stroke-[1.5] text-amaliah-600" />
                 </div>
                 <span className="text-[11px] md:text-xs font-semibold text-slate-700 text-center leading-tight">{cat.label}</span>
               </motion.div>

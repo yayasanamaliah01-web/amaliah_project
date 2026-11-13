@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Search, Plus, Filter, Download, ArrowUpRight, CheckCircle2, Clock, ArrowLeft, Building2, Calendar, FileText, Save, Check, FileCheck } from 'lucide-react';
 import { useAppContext, PenyaluranTask } from '../../context/AppContext';
 import BeritaAcaraModal from '../../components/BeritaAcaraModal';
@@ -39,11 +39,11 @@ export default function AdminPenyaluran() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Tanggal Pengajuan</label>
-                <input type="date" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="date" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Sumber Dana</label>
-                <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" value={formData.sourceFund} onChange={(e) => setFormData({...formData, sourceFund: e.target.value})}>
+                <select className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" value={formData.sourceFund} onChange={(e) => setFormData({...formData, sourceFund: e.target.value})}>
                   <option>Zakat</option>
                   <option>Infaq Terikat</option>
                   <option>Infaq Tidak Terikat</option>
@@ -53,21 +53,21 @@ export default function AdminPenyaluran() {
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nama Program / Kegiatan</label>
-                <input type="text" placeholder="Contoh: Santunan Yatim Tahap 1, Pembayaran Listrik" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="text" placeholder="Contoh: Santunan Yatim Tahap 1, Pembayaran Listrik" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Penerima Manfaat / Vendor</label>
-                <input type="text" placeholder="Contoh: 50 Anak Yatim Desa A, PLN" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="text" placeholder="Contoh: 50 Anak Yatim Desa A, PLN" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Nominal Pengajuan (Rp)</label>
-                <input type="number" placeholder="0" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+                <input type="number" placeholder="0" className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">Catatan / Deskripsi Penyaluran</label>
-              <textarea rows={4} placeholder="Jelaskan rincian penggunaan dana secara lengkap..." className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500"></textarea>
+              <textarea rows={4} placeholder="Jelaskan rincian penggunaan dana secara lengkap..." className="w-full px-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500"></textarea>
             </div>
 
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3 items-start">
@@ -82,7 +82,7 @@ export default function AdminPenyaluran() {
             <button onClick={() => setIsAdding(false)} className="px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">
               Batal
             </button>
-            <button onClick={() => setIsAdding(false)} className="flex items-center gap-2 px-6 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+            <button onClick={() => setIsAdding(false)} className="flex items-center gap-2 px-6 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
               <Save className="w-4 h-4" /> Ajukan Penyaluran
             </button>
           </div>
@@ -136,7 +136,7 @@ export default function AdminPenyaluran() {
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 mb-1 flex items-center gap-1"><FileText className="w-3.5 h-3.5" /> Nominal</div>
-                  <div className="text-sm font-bold text-maun-600">{selectedTrx.amount}</div>
+                  <div className="text-sm font-bold text-amaliah-600">{selectedTrx.amount}</div>
                 </div>
               </div>
 
@@ -193,11 +193,11 @@ export default function AdminPenyaluran() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-slate-500">Nominal Pengajuan</span>
-                  <span className="font-bold text-maun-900 text-base">{selectedTrx.amount}</span>
+                  <span className="font-bold text-amaliah-900 text-base">{selectedTrx.amount}</span>
                 </div>
-                <div className="flex justify-between items-center pt-3 border-t border-maun-200">
-                  <span className="text-maun-800 font-bold">Total Disetujui</span>
-                  <span className="font-bold text-xl text-maun-900">{selectedTrx.status === 'Selesai' ? selectedTrx.amount : '-'}</span>
+                <div className="flex justify-between items-center pt-3 border-t border-amaliah-200">
+                  <span className="text-amaliah-800 font-bold">Total Disetujui</span>
+                  <span className="font-bold text-xl text-amaliah-900">{selectedTrx.status === 'Selesai' ? selectedTrx.amount : '-'}</span>
                 </div>
               </div>
               
@@ -252,7 +252,7 @@ export default function AdminPenyaluran() {
           <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
             <Download className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-4 py-2 bg-maun-600 text-white rounded-lg text-sm font-bold hover:bg-maun-700 transition-colors">
+          <button onClick={() => setIsAdding(true)} className="flex items-center gap-2 px-4 py-2 bg-amaliah-600 text-white rounded-lg text-sm font-bold hover:bg-amaliah-700 transition-colors">
             <Plus className="w-4 h-4 stroke-[3]" /> Ajukan Penyaluran
           </button>
         </div>
@@ -262,7 +262,7 @@ export default function AdminPenyaluran() {
         <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row gap-4 justify-between items-center bg-slate-50/50">
           <div className="relative w-full sm:w-72">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input type="text" placeholder="Cari program, penerima..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-maun-500" />
+            <input type="text" placeholder="Cari program, penerima..." className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:border-amaliah-500" />
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
             <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
@@ -310,7 +310,7 @@ export default function AdminPenyaluran() {
                     )}
                   </td>
                   <td className="p-4 text-center">
-                    <button onClick={() => setSelectedTrx(trx)} className="text-xs font-semibold text-maun-600 hover:text-maun-700 hover:underline">Detail</button>
+                    <button onClick={() => setSelectedTrx(trx)} className="text-xs font-semibold text-amaliah-600 hover:text-amaliah-700 hover:underline">Detail</button>
                   </td>
                 </tr>
               ))}
