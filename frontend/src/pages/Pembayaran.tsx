@@ -113,6 +113,7 @@ export default function PembayaranPage() {
   const [isSimulatingBankPay, setIsSimulatingBankPay] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [copied, setCopied] = useState<boolean>(false);
   const [activeInstruction, setActiveInstruction] = useState<'mbanking' | 'atm' | 'ibanking'>('mbanking');
   const [countdownSeconds, setCountdownSeconds] = useState<number>(24 * 3600 - 15);
 
