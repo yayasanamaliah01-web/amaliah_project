@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Heart, QrCode, CreditCard, CheckCircle, ArrowRight, Sparkles, RefreshCw } from 'lucide-react';
 import { api, ApiDonation } from '../services/api';
 import { useAppContext } from '../context/AppContext';
