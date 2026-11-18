@@ -50,6 +50,10 @@ public class AuthService {
         return googleClientId;
     }
 
+    private String getEffectiveGoogleClientSecret() {
+        return googleClientSecret;
+    }
+
     @Transactional
     public AuthDto.AuthResponse register(AuthDto.RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -147,8 +151,9 @@ public class AuthService {
         }
 
         String aud = (String) tokenInfo.get("aud");
-        if (aud != null && StringUtils.hasText(googleClientId) && !aud.equals(googleClientId)) {
-            log.warn("Audience mismatch: expected {} but got {}", googleClientId, aud);
+        String configuredClientId = getGoogleClientId();
+        if (aud != null && StringUtils.hasText(configuredClientId) && !aud.equals(configuredClientId)) {
+            log.warn("Audience mismatch: expected {} but got {}", configuredClientId, aud);
             throw new BadRequestException("Audience Google token tidak valid");
         }
 
@@ -194,8 +199,8 @@ public class AuthService {
 
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("code", code);
-            body.add("client_id", googleClientId);
-            body.add("client_secret", googleClientSecret);
+            body.add("client_id", getGoogleClientId());
+            body.add("client_secret", getEffectiveGoogleClientSecret());
             body.add("redirect_uri", StringUtils.hasText(redirectUri) ? redirectUri : "https://amaliah.my.id/auth/google/callback");
             body.add("grant_type", "authorization_code");
 

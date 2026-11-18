@@ -199,9 +199,9 @@ export default function PembayaranPage() {
         paymentChannel: 'BSI',
       });
 
-      setDonationData(res);
-      setStep('payment');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      navigate(`/pembayaran/${res.transactionId}`, {
+        state: { donation: res },
+      });
     } catch (err: any) {
       setErrorMsg(err.message || 'Gagal memproses pembayaran. Silakan coba lagi.');
     } finally {
@@ -264,46 +264,27 @@ export default function PembayaranPage() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen py-6 sm:py-10">
-      <div className="max-w-xl mx-auto px-4 sm:px-6">
-        {/* Navigation Back */}
-        <div className="flex items-center justify-between mb-5">
-          <button
-            onClick={() => {
-              if (step === 'payment') {
-                setStep('form');
-              } else if (step === 'success') {
-                navigate('/programs');
-              } else {
-                navigate(-1);
-              }
-            }}
-            className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>{step === 'payment' ? 'Ubah Nominal & Metode' : 'Kembali'}</span>
-          </button>
-          <div className="text-[11px] font-mono text-slate-400">
-            {step === 'form' ? 'Langkah 1 dari 2' : step === 'payment' ? 'Langkah 2 dari 2' : 'Selesai'}
-          </div>
-        </div>
+    <div className="bg-white min-h-screen flex flex-col font-sans">
+      {/* Sticky Clean Header: Back Button di pojok kiri, Judul di tengah */}
+      <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-4 h-14 flex items-center justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-2 -ml-1 rounded-full hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer active:scale-95"
+          title="Kembali"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h1 className="text-sm sm:text-base font-bold text-slate-800 text-center">
+          Pembayaran Donasi
+        </h1>
+        <div className="w-9" /> {/* Spacer penyeimbang tombol back agar judul tetap persis di tengah */}
+      </header>
 
+      {/* Main Content Area (Clean, tanpa box/container bertumpuk) */}
+      <main className="flex-1 max-w-lg w-full mx-auto px-4 py-5 space-y-5">
         {/* STEP 1: FORM RINCIAN PEMBAYARAN */}
         {step === 'form' && (
-          <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/50 mb-2">
-                <HeartHandshake className="w-3.5 h-3.5" />
-                <span>{zakatCategory || 'Zakat & Infaq'}</span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight leading-snug">
-                Formulir Penunaian Pembayaran
-              </h1>
-              <p className="text-xs text-slate-500 mt-1">
-                {programTitle} — Pesantren Amaliah
-              </p>
-            </div>
-
+          <div className="space-y-4">
             {errorMsg && (
               <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
                 {errorMsg}
@@ -316,7 +297,7 @@ export default function PembayaranPage() {
                 <label className="text-xs font-semibold text-slate-700 block mb-1.5">
                   Program Penyaluran
                 </label>
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center justify-between">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 flex items-center justify-between">
                   <span className="font-medium truncate">{programTitle}</span>
                   <span className="text-[10px] text-emerald-700 font-semibold shrink-0 ml-2">Terverifikasi</span>
                 </div>
@@ -325,41 +306,29 @@ export default function PembayaranPage() {
               {/* Input Nominal */}
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                  Nominal Zakat / Infaq (Rp)
+                  Nominal Donasi / Infaq
                 </label>
-                <div className="grid grid-cols-3 gap-2 mb-2.5">
-                  {presetAmounts.map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => setAmount(amt)}
-                      className={`py-2 px-1 rounded-xl text-xs font-semibold border transition-all ${
-                        amount === amt
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
-                    >
-                      Rp {amt.toLocaleString('id-ID')}
-                    </button>
-                  ))}
-                </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-500 text-sm">
                     Rp
                   </span>
                   <input
-                    type="number"
-                    min={10000}
-                    step={1000}
-                    value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 font-bold text-lg text-slate-800 outline-none focus:border-emerald-600 bg-slate-50/50 focus:bg-white"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0"
+                    value={amount ? amount.toLocaleString('id-ID') : ''}
+                    onChange={(e) => {
+                      const raw = e.target.value.replace(/\D/g, '');
+                      setAmount(raw ? Number(raw) : 0);
+                    }}
+                    className="w-full pl-12 pr-4 py-3 rounded-2xl border border-slate-200 font-bold text-lg text-slate-800 outline-none focus:border-emerald-600 bg-slate-50/50 focus:bg-white transition-colors"
+                    required
                   />
                 </div>
               </div>
 
               {/* Data Muzakki / Donatur */}
-              <div className="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3.5">
+              <div className="bg-slate-50/70 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3.5">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
                   <div className="flex items-center gap-2">
                     <User className="w-4 h-4 text-emerald-600" />
@@ -373,13 +342,6 @@ export default function PembayaranPage() {
                   ) : null}
                 </div>
 
-                {activeUser && (
-                  <div className="text-[11px] text-slate-600 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100 flex items-center justify-between">
-                    <span>Data terisi otomatis dari akun <strong>{activeUser.name}</strong></span>
-                    <span className="text-[10px] text-emerald-700 font-semibold">{activeUser.email}</span>
-                  </div>
-                )}
-
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">
                     Nama Lengkap Donatur
@@ -390,7 +352,8 @@ export default function PembayaranPage() {
                     placeholder="Nama Lengkap Anda"
                     value={isAnonymous ? 'Hamba Allah' : donorName}
                     onChange={(e) => setDonorName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 disabled:bg-slate-100 disabled:text-slate-500 transition-all"
+                    className="w-full p-3 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 disabled:bg-slate-100 disabled:text-slate-500 transition-all"
+                    required={!isAnonymous}
                   />
                 </div>
 
@@ -410,53 +373,24 @@ export default function PembayaranPage() {
                         Sembunyikan nama saya (Donasi sebagai Hamba Allah)
                       </span>
                       <span className="text-[11px] text-slate-500 block mt-0.5 leading-relaxed">
-                        Nama asli Anda akan dirahasiakan dari publik dan feed transparansi, namun tanda terima dan laporan tetap dikirimkan ke email Anda.
+                        Nama asli Anda akan dirahasiakan dari publik dan feed transparansi.
                       </span>
                     </div>
                   </label>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                  <div>
-                    <label className="text-[11px] font-medium text-slate-600 flex items-center gap-1 mb-1">
-                      <Phone className="w-3 h-3 text-slate-400" />
-                      <span>No. WhatsApp / HP</span>
-                    </label>
-                    <input
-                      type="tel"
-                      placeholder="0812xxxxxxx"
-                      value={donorPhone}
-                      onChange={(e) => setDonorPhone(e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-medium text-slate-600 flex items-center gap-1 mb-1">
-                      <Mail className="w-3 h-3 text-slate-400" />
-                      <span>Email Bukti Donasi</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="email@anda.com"
-                      value={donorEmail}
-                      onChange={(e) => setDonorEmail(e.target.value)}
-                      className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600"
-                    />
-                  </div>
                 </div>
 
                 {/* Niat / Doa Kebaikan */}
                 <div className="pt-1">
                   <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5 mb-1">
                     <Heart className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Niat / Doa Kebaikan (Tetap Tersimpan & Ditampilkan)</span>
+                    <span>Niat / Doa Kebaikan</span>
                   </label>
                   <textarea
                     rows={2}
                     placeholder="Tuliskan niat, doa, atau harapan Anda untuk santri, asatidz, dan kemaslahatan umat..."
                     value={doa}
                     onChange={(e) => setDoa(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 placeholder:text-slate-400"
+                    className="w-full p-3 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 placeholder:text-slate-400"
                   ></textarea>
                 </div>
               </div>
@@ -470,7 +404,7 @@ export default function PembayaranPage() {
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('QRIS')}
-                    className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+                    className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
                       paymentMethod === 'QRIS'
                         ? 'border-emerald-600 bg-emerald-50/60 text-emerald-900 shadow-xs'
                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -479,14 +413,14 @@ export default function PembayaranPage() {
                     <QrCode className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <div className="text-xs font-bold">QRIS Dinamis</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">BSI, BCA, Livin, GoPay, OVO, ShopeePay</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">BSI, BCA, Livin, GoPay, ShopeePay</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('VIRTUAL_ACCOUNT')}
-                    className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all ${
+                    className={`p-3.5 rounded-2xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
                       paymentMethod === 'VIRTUAL_ACCOUNT'
                         ? 'border-emerald-600 bg-emerald-50/60 text-emerald-900 shadow-xs'
                         : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -495,7 +429,7 @@ export default function PembayaranPage() {
                     <CreditCard className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                     <div>
                       <div className="text-xs font-bold">Virtual Account</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">BSI Virtual Escrow Pesantren</div>
+                      <div className="text-[10px] text-slate-500 mt-0.5">BSI Virtual Account Pesantren</div>
                     </div>
                   </button>
                 </div>
@@ -505,7 +439,7 @@ export default function PembayaranPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm sm:text-base py-3.5 rounded-xl shadow-md shadow-emerald-600/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm sm:text-base py-3.5 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-4"
               >
                 {isLoading ? (
                   <span className="inline-block animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
@@ -984,7 +918,7 @@ export default function PembayaranPage() {
             </div>
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 }

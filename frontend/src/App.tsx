@@ -29,6 +29,7 @@ import KetuaApp from './ketua/KetuaApp';
 import LoginPage from './pages/Login';
 import AdminLogin from './admin/pages/AdminLogin';
 import PembayaranPage from './pages/Pembayaran';
+import InstruksiPembayaranPage from './pages/InstruksiPembayaran';
 import GoogleCallback from './pages/GoogleCallback';
 import { useAppContext } from './context/AppContext';
 
@@ -261,6 +262,7 @@ export default function App() {
               )
             }
           />
+          <Route path="/pembayaran/:transactionId" element={<InstruksiPembayaranPage />} />
           <Route path="/wakaf" element={<WakafPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/qurban" element={<QurbanPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/galang-dana" element={<GalangDanaPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />

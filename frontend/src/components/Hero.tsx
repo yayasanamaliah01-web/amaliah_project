@@ -32,82 +32,79 @@ export default function Hero({
   return (
     <section
       id="hero"
-      className="relative bg-white border-b border-slate-200/80 overflow-hidden min-h-[calc(100dvh-4rem)] flex flex-col justify-start lg:justify-center"
+      className="relative bg-white border-b border-slate-200/80 overflow-hidden flex flex-col justify-start lg:justify-center"
     >
       {/* ============================================================== */}
-      {/* 1. MOBILE VIEW: ULTRA-CLEAN, LIGHT & MINIMALIST                */}
+      {/* 1. MOBILE VIEW: FULL-SCREEN IMMERSIVE, ZERO DEAD SPACE        */}
       {/* ============================================================== */}
-      <div className="lg:hidden w-full px-4 pt-3 pb-12 flex-1 flex flex-col justify-start">
+      <div className="lg:hidden w-full px-4 py-3 flex flex-col justify-between h-[calc(100dvh-4rem)]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="space-y-3"
+          className="flex-1 flex flex-col justify-between h-full space-y-2.5"
         >
           {/* Top Badge & Clean Title */}
-          <motion.div variants={itemVariants}>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-100 text-[11px] font-semibold text-emerald-800 mb-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+          <motion.div variants={itemVariants} className="shrink-0 space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-50/90 border border-slate-200/90 text-[11px] font-medium text-slate-700 shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               <span>Pesantren Amaliah</span>
-              <span className="text-slate-300">•</span>
-              <span className="text-emerald-700 font-bold">Akreditasi A</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span className="text-emerald-700 font-semibold">Akreditasi A</span>
             </div>
-            <h1 className="text-xl font-bold text-slate-900 leading-snug tracking-tight">
+            <h1 className="text-[21px] sm:text-2xl font-bold text-slate-900 leading-[1.25] tracking-tight">
               Mencetak Generasi Qur'ani, <br />
               <span className="text-emerald-700">Menjaga Amanah Ummat</span>
             </h1>
           </motion.div>
 
-          {/* Bright, Crisp Santri Photo Card */}
+          {/* Bright, Crisp Santri Photo Card (Takes available height dynamically) */}
           <motion.div
             variants={itemVariants}
-            className="w-full aspect-[16/9] max-h-[190px] rounded-2xl overflow-hidden relative border border-slate-200/80 shadow-xs"
+            className="w-full flex-1 min-h-[160px] rounded-2xl overflow-hidden relative border border-slate-200/80 shadow-xs"
           >
             <img
               src="/images/santri-hero.jpg"
               alt="Santri Pesantren Amaliah Belajar Al-Qur'an"
               className="w-full h-full object-cover object-center"
             />
-            <div className="absolute bottom-2 left-2.5 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-semibold text-slate-800 border border-white/60 shadow-xs">
+            <div className="absolute bottom-2.5 left-2.5 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-semibold text-slate-800 border border-white/60 shadow-xs">
               Santri Tahfidz Qur'an Amaliah
             </div>
           </motion.div>
 
-          {/* Clean 2-Column Buttons */}
-          <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2 pt-0.5">
-            <button
-              onClick={() => setActivePage('programs')}
-              className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-600/20 transition-all"
-            >
-              <span>Tunaikan Infaq</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setActivePage('zakat')}
-              className="bg-white hover:bg-slate-50 active:scale-95 border border-slate-200 text-slate-700 font-semibold text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs"
-            >
-              <Calculator className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Kalkulator Zakat</span>
-            </button>
-          </motion.div>
+          {/* Bottom Controls: Buttons + Stats Bar */}
+          <motion.div variants={itemVariants} className="space-y-2.5 shrink-0">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setActivePage('programs')}
+                className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-semibold text-xs py-3 px-3 rounded-xl flex items-center justify-center gap-1.5 shadow-sm shadow-emerald-600/20 transition-all cursor-pointer"
+              >
+                <span>Tunaikan Infaq</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setActivePage('zakat')}
+                className="bg-white hover:bg-slate-50 active:scale-95 border border-slate-200 text-slate-700 font-semibold text-xs py-3 px-3 rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              >
+                <Calculator className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Kalkulator Zakat</span>
+              </button>
+            </div>
 
-          {/* Clean Minimalist Stats Bar */}
-          <motion.div
-            variants={itemVariants}
-            className="bg-slate-50 rounded-xl border border-slate-200/70 p-2.5 grid grid-cols-3 divide-x divide-slate-200 text-center"
-          >
-            <div className="px-1">
-              <div className="text-xs font-bold text-slate-900">1.250+</div>
-              <div className="text-[10px] text-slate-500 font-medium">Santri Dhuafa</div>
-            </div>
-            <div className="px-1">
-              <div className="text-xs font-bold text-slate-900">100%</div>
-              <div className="text-[10px] text-slate-500 font-medium">Bebas Biaya</div>
-            </div>
-            <div className="px-1">
-              <div className="text-xs font-bold text-emerald-700">Bank BSI</div>
-              <div className="text-[10px] text-slate-500 font-medium">Transparan</div>
+            <div className="bg-slate-50 rounded-xl border border-slate-200/70 p-2.5 grid grid-cols-3 divide-x divide-slate-200 text-center">
+              <div className="px-1">
+                <div className="text-xs font-bold text-slate-900">1.250+</div>
+                <div className="text-[10px] text-slate-500 font-medium">Santri Dhuafa</div>
+              </div>
+              <div className="px-1">
+                <div className="text-xs font-bold text-slate-900">100%</div>
+                <div className="text-[10px] text-slate-500 font-medium">Bebas Biaya</div>
+              </div>
+              <div className="px-1">
+                <div className="text-xs font-bold text-emerald-700">Bank BSI</div>
+                <div className="text-[10px] text-slate-500 font-medium">Transparan</div>
+              </div>
             </div>
           </motion.div>
         </motion.div>
@@ -128,11 +125,14 @@ export default function Hero({
           >
             <motion.div
               variants={itemVariants}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/70 text-xs font-semibold text-emerald-800 mb-4"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-50 border border-slate-200/90 text-xs font-medium text-slate-700 mb-4 shadow-2xs"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-              <span>Pesantren Amaliah • Amanah & Transparan</span>
+              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>Pesantren Amaliah</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span className="text-emerald-700 font-semibold">Akreditasi A</span>
+              <span className="w-1 h-1 rounded-full bg-slate-300" />
+              <span className="text-slate-500">Amanah & Transparan</span>
             </motion.div>
 
             <motion.h1

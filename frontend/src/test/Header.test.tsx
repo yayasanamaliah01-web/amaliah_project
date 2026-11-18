@@ -45,4 +45,29 @@ describe('Header Component Unit Tests', () => {
     fireEvent.click(logoutButton);
     expect(handleLogout).toHaveBeenCalledTimes(1);
   });
+
+  it('shows Dashboard button on root path when logged in, but hides it on other paths like /dashboard', () => {
+    // 1. On root path '/'
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <Header isLoggedIn={true} onLogout={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    const dashboardLinks = screen.getAllByRole('link', { name: /Dashboard/i });
+    expect(dashboardLinks.length).toBeGreaterThan(0);
+    expect(dashboardLinks[0]).toHaveAttribute('href', '/dashboard');
+
+    unmount();
+
+    // 2. On non-root path '/dashboard'
+    render(
+      <MemoryRouter initialEntries={['/dashboard']}>
+        <Header isLoggedIn={true} onLogout={vi.fn()} />
+      </MemoryRouter>
+    );
+
+    const hiddenDashboardLinks = screen.queryAllByRole('link', { name: /Dashboard/i });
+    expect(hiddenDashboardLinks.length).toBe(0);
+  });
 });

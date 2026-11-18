@@ -189,11 +189,13 @@ export default function LoginPage({
       }
     }
 
-    // 1. Try Google Identity Services (GIS) if loaded
-    if (typeof (window as any).google?.accounts?.id !== 'undefined') {
+    // 1. Try Google Identity Services (GIS) if loaded on HTTPS
+    const isHttps = window.location.protocol === 'https:';
+    if (isHttps && typeof (window as any).google?.accounts?.id !== 'undefined') {
       try {
         (window as any).google.accounts.id.initialize({
           client_id: clientId,
+          use_fedcm_for_prompt: true,
           callback: async (response: any) => {
             try {
               await loginWithGoogle(response.credential);
@@ -219,7 +221,7 @@ export default function LoginPage({
       }
     }
 
-    // 2. Fallback to direct OAuth redirect flow
+    // 2. Direct OAuth redirect flow (ideal for localhost development & reliable fallback)
     redirectToGoogleOAuth(clientId, redirectUri);
   };
 
