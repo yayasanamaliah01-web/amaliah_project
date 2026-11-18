@@ -18,6 +18,10 @@ import {
   Download,
   Share2,
   Heart,
+  User,
+  Mail,
+  Phone,
+  EyeOff,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { api, ApiDonation, API_BASE_URL } from '../services/api';
@@ -35,6 +39,18 @@ export default function PembayaranPage() {
   const queryAmount = queryParams.get('amount');
   const queryTitle = queryParams.get('title') || queryParams.get('programTitle');
   const queryCategory = queryParams.get('zakatCategory');
+
+  // Baca data user dari context atau localStorage sebagai fallback instan
+  const storedUser = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('amaliah_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const activeUser = currentUser || storedUser;
 
   const [campaignId, setCampaignId] = useState<number>(() => {
     if (navState.campaignId) return Number(navState.campaignId);
@@ -55,16 +71,36 @@ export default function PembayaranPage() {
   });
 
   const [donorName, setDonorName] = useState<string>(
-    currentUser?.name || navState.donorName || queryParams.get('donorName') || ''
+    activeUser?.name || navState.donorName || queryParams.get('donorName') || ''
   );
-  const [donorEmail, setDonorEmail] = useState<string>(currentUser?.email || '');
-  const [donorPhone, setDonorPhone] = useState<string>(currentUser?.phone || '');
+  const [donorEmail, setDonorEmail] = useState<string>(
+    activeUser?.email || navState.donorEmail || queryParams.get('donorEmail') || ''
+  );
+  const [donorPhone, setDonorPhone] = useState<string>(
+    activeUser?.phone || navState.donorPhone || queryParams.get('donorPhone') || ''
+  );
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [doa, setDoa] = useState<string>(navState.doa || queryParams.get('doa') || '');
   const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'VIRTUAL_ACCOUNT'>('QRIS');
   const [zakatCategory, setZakatCategory] = useState<string>(
     navState.zakatCategory || queryCategory || ''
   );
+
+  // Sinkronisasi data profile otomatis jika currentUser / storedUser berubah atau baru ter-load
+  useEffect(() => {
+    const usr = currentUser || storedUser;
+    if (usr) {
+      if (!donorName || donorName === 'Hamba Allah') {
+        setDonorName(usr.name || '');
+      }
+      if (!donorEmail) {
+        setDonorEmail(usr.email || '');
+      }
+      if (!donorPhone) {
+        setDonorPhone(usr.phone || '');
+      }
+    }
+  }, [currentUser, storedUser]);
 
   // Step flow: 'form' -> 'payment' -> 'success'
   const [step, setStep] = useState<'form' | 'payment' | 'success'>('form');
@@ -269,35 +305,68 @@ export default function PembayaranPage() {
               </div>
 
               {/* Data Muzakki / Donatur */}
-              <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+              <div className="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3.5">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-200/70">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-bold text-slate-800">Identitas Donatur</span>
+                  </div>
+                  {activeUser ? (
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-200/50">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                      Profil Terhubung
+                    </span>
+                  ) : null}
+                </div>
+
+                {activeUser && (
+                  <div className="text-[11px] text-slate-600 bg-emerald-50/70 p-2.5 rounded-xl border border-emerald-100 flex items-center justify-between">
+                    <span>Data terisi otomatis dari akun <strong>{activeUser.name}</strong></span>
+                    <span className="text-[10px] text-emerald-700 font-semibold">{activeUser.email}</span>
+                  </div>
+                )}
+
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Nama Muzakki / Pembayar
+                    Nama Lengkap Donatur
                   </label>
                   <input
                     type="text"
                     disabled={isAnonymous}
-                    placeholder="Nama Lengkap"
+                    placeholder="Nama Lengkap Anda"
                     value={isAnonymous ? 'Hamba Allah' : donorName}
                     onChange={(e) => setDonorName(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 disabled:bg-slate-200/50"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 disabled:bg-slate-100 disabled:text-slate-500 transition-all"
                   />
                 </div>
 
-                <label className="text-xs font-medium text-slate-600 flex items-center gap-2 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="w-4 h-4 accent-emerald-600 rounded"
-                  />
-                  <span>Sembunyikan nama (sebagai Hamba Allah)</span>
-                </label>
+                {/* Checkbox Sembunyikan Nama / Hamba Allah */}
+                <div className="bg-white p-3 rounded-xl border border-slate-200/90 hover:border-emerald-200 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      id="anonymousCheck"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                      className="w-4 h-4 mt-0.5 accent-emerald-600 rounded cursor-pointer shrink-0"
+                    />
+                    <div className="text-xs">
+                      <span className="font-semibold text-slate-800 flex items-center gap-1.5">
+                        <EyeOff className="w-3.5 h-3.5 text-slate-500" />
+                        Sembunyikan nama saya (Donasi sebagai Hamba Allah)
+                      </span>
+                      <span className="text-[11px] text-slate-500 block mt-0.5 leading-relaxed">
+                        Nama asli Anda akan dirahasiakan dari publik dan feed transparansi, namun tanda terima dan laporan tetap dikirimkan ke email Anda.
+                      </span>
+                    </div>
+                  </label>
+                </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                   <div>
-                    <label className="text-[11px] font-medium text-slate-600 block mb-1">
-                      No. WhatsApp / HP (Opsional)
+                    <label className="text-[11px] font-medium text-slate-600 flex items-center gap-1 mb-1">
+                      <Phone className="w-3 h-3 text-slate-400" />
+                      <span>No. WhatsApp / HP</span>
                     </label>
                     <input
                       type="tel"
@@ -308,8 +377,9 @@ export default function PembayaranPage() {
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-medium text-slate-600 block mb-1">
-                      Email Bukti Transaksi (Opsional)
+                    <label className="text-[11px] font-medium text-slate-600 flex items-center gap-1 mb-1">
+                      <Mail className="w-3 h-3 text-slate-400" />
+                      <span>Email Bukti Donasi</span>
                     </label>
                     <input
                       type="email"
@@ -321,16 +391,18 @@ export default function PembayaranPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Niat / Doa Zakat (Opsional)
+                {/* Niat / Doa Kebaikan */}
+                <div className="pt-1">
+                  <label className="text-xs font-semibold text-slate-700 flex items-center gap-1.5 mb-1">
+                    <Heart className="w-3.5 h-3.5 text-rose-500" />
+                    <span>Niat / Doa Kebaikan (Tetap Tersimpan & Ditampilkan)</span>
                   </label>
                   <textarea
                     rows={2}
-                    placeholder="Tuliskan niat atau doa Anda..."
+                    placeholder="Tuliskan niat, doa, atau harapan Anda untuk santri, asatidz, dan kemaslahatan umat..."
                     value={doa}
                     onChange={(e) => setDoa(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-600 placeholder:text-slate-400"
                   ></textarea>
                 </div>
               </div>

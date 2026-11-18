@@ -49,17 +49,37 @@ export function CheckoutModal({
 }) {
   const { currentUser, campaigns, refreshAllData } = useAppContext();
 
+  const storedUser = React.useMemo(() => {
+    try {
+      const saved = localStorage.getItem('amaliah_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const activeUser = currentUser || storedUser;
+
   const [step, setStep] = useState<'form' | 'payment' | 'success'>('form');
   const [selectedCampaignId, setSelectedCampaignId] = useState<number>(() => {
     return programId ? Number(programId) : (campaigns[0]?.id || 1);
   });
   const [amount, setAmount] = useState<number>(50000);
-  const [donorName, setDonorName] = useState<string>(currentUser?.name || '');
-  const [donorEmail, setDonorEmail] = useState<string>(currentUser?.email || '');
-  const [donorPhone, setDonorPhone] = useState<string>(currentUser?.phone || '');
+  const [donorName, setDonorName] = useState<string>(activeUser?.name || '');
+  const [donorEmail, setDonorEmail] = useState<string>(activeUser?.email || '');
+  const [donorPhone, setDonorPhone] = useState<string>(activeUser?.phone || '');
   const [doa, setDoa] = useState<string>('');
   const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<'QRIS' | 'VIRTUAL_ACCOUNT'>('QRIS');
+
+  React.useEffect(() => {
+    const usr = currentUser || storedUser;
+    if (usr) {
+      if (!donorName || donorName === 'Hamba Allah') setDonorName(usr.name || '');
+      if (!donorEmail) setDonorEmail(usr.email || '');
+      if (!donorPhone) setDonorPhone(usr.phone || '');
+    }
+  }, [currentUser, storedUser]);
 
   // Donation response state
   const [donationData, setDonationData] = useState<ApiDonation | null>(null);
@@ -198,6 +218,13 @@ export function CheckoutModal({
 
           {/* Data Donatur */}
           <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
+            {activeUser && (
+              <div className="text-[11px] text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 flex items-center justify-between">
+                <span>Data terisi dari akun <strong>{activeUser.name}</strong></span>
+                <span className="text-[10px] text-emerald-600 font-semibold">{activeUser.email}</span>
+              </div>
+            )}
+
             <div>
               <label className="text-xs font-bold text-slate-700 block mb-1">Nama Donatur</label>
               <input
@@ -210,21 +237,47 @@ export function CheckoutModal({
               />
             </div>
 
-            <label className="text-xs font-semibold text-slate-600 flex items-center gap-2 cursor-pointer select-none">
+            <label className="text-xs font-semibold text-slate-600 flex items-start gap-2 cursor-pointer select-none bg-white p-2.5 rounded-xl border border-slate-200">
               <input
                 type="checkbox"
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="w-4 h-4 accent-emerald-600 rounded"
+                className="w-4 h-4 mt-0.5 accent-emerald-600 rounded shrink-0 cursor-pointer"
               />
-              <span>Sembunyikan Nama (Donasi sebagai Hamba Allah)</span>
+              <div>
+                <span className="block text-slate-800 font-semibold">Sembunyikan Nama (sebagai Hamba Allah)</span>
+                <span className="block text-[10px] text-slate-400 font-normal mt-0.5">Nama dirahasiakan di daftar donatur publik, bukti donasi tetap dikirim ke email.</span>
+              </div>
             </label>
 
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 block mb-1">No. WhatsApp</label>
+                <input
+                  type="tel"
+                  placeholder="0812xxxxxxx"
+                  value={donorPhone}
+                  onChange={(e) => setDonorPhone(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-500"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 block mb-1">Email Bukti</label>
+                <input
+                  type="email"
+                  placeholder="email@anda.com"
+                  value={donorEmail}
+                  onChange={(e) => setDonorEmail(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Doa / Pesan Kebaikan (Opsional)</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Niat / Doa Kebaikan (Opsional)</label>
               <textarea
                 rows={2}
-                placeholder="Tuliskan doa atau harapan untuk program ini..."
+                placeholder="Tuliskan doa atau harapan untuk para santri & asatidz..."
                 value={doa}
                 onChange={(e) => setDoa(e.target.value)}
                 className="w-full p-2.5 rounded-xl border border-slate-200 text-xs font-medium outline-none bg-white focus:border-emerald-500"
