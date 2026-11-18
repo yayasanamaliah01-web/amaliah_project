@@ -167,6 +167,27 @@ export interface ApiDisbursement {
   disbursementDate: string;
 }
 
+export interface ApiChatMessage {
+  id: number;
+  sessionId: string;
+  senderName: string;
+  senderEmail?: string;
+  senderRole: 'USER' | 'ADMIN' | 'BOT';
+  content: string;
+  isRead: boolean;
+  timestamp: string;
+}
+
+export interface ApiConversationSummary {
+  sessionId: string;
+  donorName: string;
+  donorEmail: string;
+  lastMessage: string;
+  lastTimestamp: string;
+  unreadCount: number;
+  isOnline: boolean;
+}
+
 export const api = {
   auth: {
     login: (body: { email: string; password: string }) =>
@@ -341,5 +362,22 @@ export const api = {
     },
     listFiles: (): Promise<string[]> => request<string[]>('/storage/files'),
     getInfo: (): Promise<any> => request<any>('/storage/info'),
+  },
+  chats: {
+    getConversations: () => request<ApiConversationSummary[]>('/chats/conversations'),
+    getMessages: (sessionId: string, role?: string) =>
+      request<ApiChatMessage[]>(`/chats/${sessionId}?role=${role || 'USER'}`),
+    sendMessage: (
+      sessionId: string,
+      data: { senderName: string; senderEmail?: string; senderRole: string; content: string }
+    ) =>
+      request<ApiChatMessage>(`/chats/${sessionId}/messages`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    markAsRead: (sessionId: string, role?: string) =>
+      request<{ success: boolean; sessionId: string }>(`/chats/${sessionId}/read?role=${role || 'ADMIN'}`, {
+        method: 'PUT',
+      }),
   },
 };

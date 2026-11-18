@@ -12,6 +12,7 @@ import AdminPengadaan from './pages/AdminPengadaan';
 import AdminLaporan from './pages/AdminLaporan';
 import AdminPengaturan from './pages/AdminPengaturan';
 import AdminArtikel from './pages/AdminArtikel';
+import AdminChat from './pages/AdminChat';
 import {
   LayoutDashboard,
   LogOut,
@@ -27,6 +28,7 @@ import {
   Settings,
   Menu,
   BookOpen,
+  MessageSquare,
 } from 'lucide-react';
 
 export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) {
@@ -40,6 +42,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'chat', label: 'Live Chat Donatur (WA)', icon: MessageSquare },
     { id: 'penerimaan', label: 'Penerimaan Dana', icon: Receipt },
     { id: 'penyaluran', label: 'Penyaluran', icon: Send },
     { id: 'program', label: 'Program & Anggaran', icon: Calendar },
@@ -166,6 +169,7 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
           <Routes>
             <Route index element={<AdminDashboard />} />
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="chat" element={<AdminChat />} />
             <Route path="penerimaan" element={<AdminPenerimaan />} />
             <Route path="penyaluran" element={<AdminPenyaluran />} />
             <Route path="program" element={<AdminProgram />} />

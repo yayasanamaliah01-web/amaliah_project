@@ -33,9 +33,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Endpoints otentikasi & webhook perbankan / payment gateway (selalu terbuka)
+                        // 1. Endpoints otentikasi & webhook perbankan / payment gateway & live chat (selalu terbuka)
                         .requestMatchers(
                                 "/api/v1/auth/**",
+                                "/api/v1/chats/**",
                                 "/api/v1/bank-callback/**",
                                 "/api/v1/xendit/**",
                                 "/api/v1/stream/**",
