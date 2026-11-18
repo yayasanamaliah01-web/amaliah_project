@@ -22,6 +22,10 @@ import {
   Mail,
   Phone,
   EyeOff,
+  Check,
+  ChevronDown,
+  ChevronUp,
+  Smartphone,
 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { api, ApiDonation, API_BASE_URL } from '../services/api';
@@ -108,7 +112,56 @@ export default function PembayaranPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSimulatingBankPay, setIsSimulatingBankPay] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [activeInstruction, setActiveInstruction] = useState<'mbanking' | 'atm' | 'ibanking'>('mbanking');
+  const [countdownSeconds, setCountdownSeconds] = useState<number>(24 * 3600 - 15);
+
+  // Live countdown timer untuk batas waktu pembayaran
+  useEffect(() => {
+    if (step !== 'payment') return;
+    const timer = setInterval(() => {
+      setCountdownSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [step]);
+
+  // Polling otomatis setiap 3.5 detik untuk mengecek status pelunasan
+  useEffect(() => {
+    if (step !== 'payment' || !donationData?.transactionId) return;
+
+    let isMounted = true;
+    const interval = setInterval(async () => {
+      try {
+        const check = await api.donations.getById(donationData.transactionId);
+        if (isMounted && check && check.status === 'SUCCESS') {
+          setDonationData(check);
+          setStep('success');
+          await refreshAllData();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      } catch (_) {
+        // Abaikan error polling background
+      }
+    }, 3500);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [step, donationData?.transactionId]);
+
+  const formatCountdown = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const copyText = (text: string, fieldName: string) => {
+    navigator.clipboard?.writeText(text);
+    setCopiedField(fieldName);
+    setTimeout(() => setCopiedField(null), 2500);
+  };
 
   // Sinkronisasi data jika campaign/state berubah
   useEffect(() => {
@@ -466,132 +519,317 @@ export default function PembayaranPage() {
           </div>
         )}
 
-        {/* STEP 2: HALAMAN INSTRUKSI PEMBAYARAN & QRIS */}
+        {/* STEP 2: HALAMAN PEMBAYARAN SHOPEE-STYLE NATIVE IN-APP */}
         {step === 'payment' && donationData && (
-          <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/90 shadow-sm space-y-5">
-            <div className="text-center">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200/60 mb-2">
-                <Clock className="w-3.5 h-3.5" /> Menunggu Pembayaran
-              </span>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">
-                Instruksi Pembayaran
-              </h1>
-              <p className="text-xs text-slate-500 mt-0.5 font-mono">
-                No. Transaksi: {donationData.transactionId}
-              </p>
-            </div>
-
-            {/* Nominal Tagihan Strip */}
-            <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex items-center justify-between">
-              <div>
-                <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider block">
-                  Total Tagihan
-                </span>
-                <span className="text-2xl font-extrabold text-emerald-700 tracking-tight">
-                  Rp {donationData.amount.toLocaleString('id-ID')}
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-[11px] text-slate-500 block">Metode:</span>
-                <span className="text-xs font-bold text-slate-800">
-                  {donationData.paymentMethod === 'QRIS' ? 'QRIS Dinamis' : 'BSI Virtual Account'}
-                </span>
-              </div>
-            </div>
-
-            {/* QRIS / VA Display Box */}
-            {donationData.paymentMethod === 'QRIS' ? (
-              <div className="p-5 rounded-2xl bg-white border-2 border-dashed border-emerald-500/60 flex flex-col items-center text-center">
-                {donationData.qrCodeUrl ? (
-                  <img
-                    src={donationData.qrCodeUrl}
-                    alt="QRIS Pembayaran"
-                    className="w-56 h-56 rounded-xl object-contain bg-white shadow-xs border border-slate-100 p-2"
-                  />
-                ) : (
-                  <div className="w-52 h-52 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400">
-                    <QrCode className="w-16 h-16" />
-                  </div>
-                )}
-                <div className="mt-3 text-xs font-bold text-slate-800">
-                  NMID: ID102026AMALIAH01
+          <div className="space-y-4">
+            {/* Shopee-style Status Banner Bar */}
+            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-3xl p-4 sm:p-5 text-white shadow-sm flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+                  <Clock className="w-5 h-5 text-white animate-pulse" />
                 </div>
-                <div className="text-[11px] text-slate-500 mt-1 max-w-xs">
-                  Buka aplikasi mobile banking (BSI, BCA, Mandiri, BRI) atau e-wallet (GoPay, OVO, ShopeePay), pilih Scan QRIS.
-                </div>
-              </div>
-            ) : (
-              <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
-                <div className="text-xs text-slate-500 font-medium">Nomor Virtual Account BSI:</div>
-                <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200">
-                  <span className="font-mono text-xl font-extrabold text-slate-900 tracking-wider">
-                    {donationData.vaNumber || '998877112233'}
-                  </span>
-                  <button
-                    onClick={() => copyToClipboard(donationData.vaNumber || '998877112233')}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{copied ? 'Tersalin' : 'Salin'}</span>
-                  </button>
-                </div>
-                <div className="text-xs text-slate-500">
-                  Atas Nama: <strong className="text-slate-800">Pesantren Amaliah - {donationData.donorName}</strong>
-                </div>
-              </div>
-            )}
-
-            {/* Tombol Portal Resmi Xendit Invoice (Jika Tersedia) */}
-            {donationData.paymentUrl && (
-              <div className="bg-gradient-to-r from-emerald-600 via-teal-700 to-emerald-800 rounded-2xl p-4 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-200">
-                    <Sparkles className="w-3.5 h-3.5" /> Portal Pembayaran Xendit
+                  <div className="text-[11px] font-semibold text-amber-100 uppercase tracking-wider">
+                    Menunggu Pembayaran
                   </div>
-                  <div className="text-sm font-bold mt-0.5">Bayar Melalui Xendit Checkout</div>
-                  <p className="text-[11px] text-emerald-100/90">
-                    Buka halaman pembayaran resmi Xendit dengan beragam pilihan metode (QRIS, VA Bank, Kartu, e-Wallet).
-                  </p>
+                  <div className="text-sm sm:text-base font-bold mt-0.5">
+                    Selesaikan dalam <span className="font-mono bg-black/20 px-2 py-0.5 rounded-lg">{formatCountdown(countdownSeconds)}</span>
+                  </div>
                 </div>
-                <a
-                  href={donationData.paymentUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-white text-emerald-800 hover:bg-emerald-50 px-4 py-2.5 rounded-xl font-bold text-xs shrink-0 transition-colors shadow-xs"
-                >
-                  <span>Buka Xendit</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
               </div>
-            )}
+              <div className="text-right hidden sm:block">
+                <span className="text-[10px] text-amber-100 block">Batas Waktu:</span>
+                <span className="text-xs font-bold">24 Jam ke Depan</span>
+              </div>
+            </div>
 
-            {/* Simulasi Pembayaran Sandbox */}
-            <div className="bg-emerald-50/60 p-4 rounded-2xl border border-emerald-200/70 space-y-2.5">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-900">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>Simulasi Pembayaran Xendit Sandbox (Testing Mode)</span>
+            {/* Shopee-style Card Rincian Tagihan */}
+            <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">
+              {/* Total Tagihan */}
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div>
+                  <span className="text-xs font-semibold text-slate-500 block">Total Tagihan Donasi</span>
+                  <span className="text-2xl sm:text-3xl font-extrabold text-orange-600 tracking-tight block mt-0.5">
+                    Rp {donationData.amount.toLocaleString('id-ID')}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => copyText(String(donationData.amount), 'amount')}
+                  className="text-xs font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-xl border border-orange-200 transition-colors cursor-pointer"
+                >
+                  {copiedField === 'amount' ? 'Tersalin!' : 'Salin Jumlah'}
+                </button>
               </div>
-              <p className="text-[11px] text-slate-600 leading-relaxed">
-                Uji coba alur transaksi seketika tanpa transfer riil. Sistem akan memicu simulasi API Xendit dan otomatis mencatat dana ke kas donasi serta menyiarkan update real-time.
-              </p>
-              <button
-                type="button"
-                disabled={isSimulatingBankPay}
-                onClick={handleSimulateBankPayment}
-                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs sm:text-sm py-3 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-              >
-                {isSimulatingBankPay ? (
-                  <>
-                    <RefreshCw className="w-4 h-4 animate-spin" />
-                    <span>Memproses Simulasi Xendit...</span>
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Simulasikan Pembayaran Berhasil</span>
-                  </>
-                )}
-              </button>
+
+              {/* Rincian Pesanan */}
+              <div className="space-y-2 text-xs py-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">No. Transaksi</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-slate-800">{donationData.transactionId}</span>
+                    <button
+                      type="button"
+                      onClick={() => copyText(donationData.transactionId, 'trx')}
+                      className="text-slate-500 hover:text-slate-800 p-1 hover:bg-slate-100 rounded transition-colors cursor-pointer"
+                      title="Salin No Transaksi"
+                    >
+                      {copiedField === 'trx' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Program Penyaluran</span>
+                  <span className="font-medium text-slate-800 text-right truncate max-w-[220px]">{donationData.campaignTitle || programTitle}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">Metode</span>
+                  <span className="font-bold text-slate-800">
+                    {donationData.paymentMethod === 'QRIS' ? 'QRIS Standar Nasional (Semua Bank & e-Wallet)' : 'Bank Syariah Indonesia (BSI) Virtual Account'}
+                  </span>
+                </div>
+              </div>
+
+              {/* KONTEN METODE 1: QRIS SHOPEE STYLE */}
+              {donationData.paymentMethod === 'QRIS' && (
+                <div className="pt-2 space-y-4">
+                  <div className="p-5 rounded-2xl bg-gradient-to-b from-slate-50 to-white border-2 border-slate-200 flex flex-col items-center text-center relative overflow-hidden">
+                    {/* Header Strip QRIS */}
+                    <div className="w-full flex items-center justify-between pb-3 border-b border-slate-200/80 mb-4">
+                      <div className="flex items-center gap-1.5">
+                        <QrCode className="w-5 h-5 text-red-600" />
+                        <span className="font-extrabold text-sm tracking-tight text-slate-900">QRIS</span>
+                        <span className="text-[10px] text-slate-500 font-medium ml-1">Standar Pembayaran Nasional</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
+                        Otomatis Terverifikasi
+                      </span>
+                    </div>
+
+                    {/* QR Code Image */}
+                    <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                      <img
+                        src={
+                          donationData.qrCodeUrl ||
+                          `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=8&data=${encodeURIComponent(
+                            donationData.qrisString || donationData.transactionId
+                          )}`
+                        }
+                        alt="QRIS Donasi"
+                        className="w-56 h-56 object-contain rounded-lg"
+                      />
+                    </div>
+
+                    <div className="mt-3.5 space-y-1">
+                      <div className="text-sm font-bold text-slate-900">
+                        YAYASAN AMALIAH SEMARANG
+                      </div>
+                      <div className="text-xs text-slate-500 font-mono">
+                        NMID: ID102026AMALIAH01
+                      </div>
+                    </div>
+
+                    <div className="w-full mt-4 pt-3 border-t border-slate-100 flex items-center justify-center gap-4 text-xs font-semibold text-slate-600">
+                      <span className="flex items-center gap-1">✅ Bebas Biaya Admin</span>
+                      <span className="flex items-center gap-1">⚡ Verifikasi Real-time</span>
+                    </div>
+                  </div>
+
+                  {/* Tombol Unduh QR */}
+                  <a
+                    href={
+                      donationData.qrCodeUrl ||
+                      `https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=10&data=${encodeURIComponent(
+                        donationData.qrisString || donationData.transactionId
+                      )}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 rounded-xl border border-slate-200 hover:border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Unduh / Simpan Gambar QR Code</span>
+                  </a>
+
+                  {/* Langkah Bayar QRIS */}
+                  <div className="bg-slate-50/90 rounded-2xl p-4 border border-slate-200/80 space-y-2 text-xs">
+                    <span className="font-bold text-slate-800 block">Cara Pembayaran QRIS:</span>
+                    <ol className="list-decimal list-inside space-y-1 text-slate-600 leading-relaxed">
+                      <li>Buka aplikasi m-Banking (BSI, BCA, Mandiri, BRI) atau E-Wallet (ShopeePay, GoPay, OVO, DANA).</li>
+                      <li>Pilih menu <strong>Scan / Bayar QRIS</strong>.</li>
+                      <li>Arahkan kamera ke kode QR di atas (atau pilih tangkapan layar dari galeri).</li>
+                      <li>Pastikan nama merchant <strong>YAYASAN AMALIAH</strong> dan nominal <strong>Rp {donationData.amount.toLocaleString('id-ID')}</strong> sesuai.</li>
+                      <li>Konfirmasi pembayaran dan masukkan PIN Anda.</li>
+                    </ol>
+                  </div>
+                </div>
+              )}
+
+              {/* KONTEN METODE 2: VIRTUAL ACCOUNT SHOPEE STYLE */}
+              {donationData.paymentMethod === 'VIRTUAL_ACCOUNT' && (
+                <div className="pt-2 space-y-4">
+                  {/* VA Card */}
+                  <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-slate-50 border-2 border-emerald-200/80 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-5 h-5 text-emerald-700" />
+                        <div>
+                          <div className="text-xs font-bold text-slate-900">Bank Syariah Indonesia (BSI)</div>
+                          <div className="text-[10px] text-slate-500">Virtual Account Escrow Resmi Pesantren</div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-200 shadow-2xs">
+                        BSI VA
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-semibold text-slate-600 block mb-1">
+                        Nomor Virtual Account:
+                      </span>
+                      <div className="flex items-center justify-between bg-white p-3.5 rounded-xl border border-slate-200/90 shadow-2xs">
+                        <span className="font-mono text-xl sm:text-2xl font-extrabold text-slate-900 tracking-wider">
+                          {donationData.vaNumber || '934799991171070'}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => copyText(donationData.vaNumber || '934799991171070', 'va')}
+                          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                        >
+                          {copiedField === 'va' ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Tersalin!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>SALIN</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1.5">
+                        Atas Nama: <strong className="text-slate-800">Pesantren Amaliah - {donationData.donorName}</strong>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Accordion Petunjuk Transfer ala Shopee */}
+                  <div className="border border-slate-200 rounded-2xl overflow-hidden divide-y divide-slate-200 text-xs">
+                    {/* Tab m-Banking */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveInstruction(activeInstruction === 'mbanking' ? ('' as any) : 'mbanking')}
+                        className="w-full p-3.5 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left font-bold text-slate-800 transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-emerald-600" />
+                          Petunjuk Transfer Mobile Banking (BSI / Lainnya)
+                        </span>
+                        {activeInstruction === 'mbanking' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                      </button>
+                      {activeInstruction === 'mbanking' && (
+                        <div className="p-4 bg-white space-y-1.5 text-slate-600 leading-relaxed border-t border-slate-100">
+                          <p>1. Buka aplikasi <strong>BSI Mobile</strong> atau m-Banking bank Anda.</p>
+                          <p>2. Pilih menu <strong>Bayar / Pembayaran &gt; Rekening Virtual / E-Commerce</strong>.</p>
+                          <p>3. Masukkan Nomor Virtual Account: <strong className="font-mono text-slate-900">{donationData.vaNumber || '934799991171070'}</strong>.</p>
+                          <p>4. Masukkan nominal tagihan tepat: <strong>Rp {donationData.amount.toLocaleString('id-ID')}</strong>.</p>
+                          <p>5. Periksa informasi penerima, lalu konfirmasi dengan PIN Anda.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tab ATM */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveInstruction(activeInstruction === 'atm' ? ('' as any) : 'atm')}
+                        className="w-full p-3.5 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left font-bold text-slate-800 transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-blue-600" />
+                          Petunjuk Transfer ATM
+                        </span>
+                        {activeInstruction === 'atm' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                      </button>
+                      {activeInstruction === 'atm' && (
+                        <div className="p-4 bg-white space-y-1.5 text-slate-600 leading-relaxed border-t border-slate-100">
+                          <p>1. Masukkan kartu ATM dan 6 digit PIN Anda.</p>
+                          <p>2. Pilih menu <strong>Transaksi Lainnya &gt; Transfer / Pembayaran &gt; Virtual Account</strong>.</p>
+                          <p>3. Masukkan nomor VA: <strong className="font-mono text-slate-900">{donationData.vaNumber || '934799991171070'}</strong>.</p>
+                          <p>4. Masukkan nominal tagihan sesuai yang tertera.</p>
+                          <p>5. Simpan struk bukti transaksi ATM Anda.</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tab Internet Banking */}
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setActiveInstruction(activeInstruction === 'ibanking' ? ('' as any) : 'ibanking')}
+                        className="w-full p-3.5 bg-slate-50 hover:bg-slate-100 flex items-center justify-between text-left font-bold text-slate-800 transition-colors"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-teal-600" />
+                          Petunjuk Transfer Internet Banking
+                        </span>
+                        {activeInstruction === 'ibanking' ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                      </button>
+                      {activeInstruction === 'ibanking' && (
+                        <div className="p-4 bg-white space-y-1.5 text-slate-600 leading-relaxed border-t border-slate-100">
+                          <p>1. Login ke akun Internet Banking bank Anda.</p>
+                          <p>2. Masuk ke menu <strong>Pembayaran &gt; Virtual Account</strong>.</p>
+                          <p>3. Masukkan kode Virtual Account dan selesaikan otentikasi transaksi.</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Status Polling Live Indicator */}
+              <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-center justify-between text-xs text-amber-900">
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="w-3.5 h-3.5 text-amber-600 animate-spin" />
+                  <span>Sistem memantau pembayaran otomatis...</span>
+                </div>
+                <span className="text-[10px] font-semibold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-full">Live Sync</span>
+              </div>
+
+              {/* CTA Action ala Shopee: Cek Status / Saya Sudah Bayar */}
+              <div className="pt-2 space-y-2">
+                <button
+                  type="button"
+                  disabled={isSimulatingBankPay}
+                  onClick={handleSimulateBankPayment}
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold text-sm sm:text-base py-3.5 rounded-2xl shadow-md shadow-orange-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {isSimulatingBankPay ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Memverifikasi Pembayaran...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Saya Sudah Bayar / Cek Status Pembayaran</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setStep('form')}
+                  className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                >
+                  Ubah Nominal atau Metode Pembayaran
+                </button>
+              </div>
             </div>
           </div>
         )}
