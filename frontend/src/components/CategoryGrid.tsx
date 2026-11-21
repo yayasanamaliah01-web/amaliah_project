@@ -3,16 +3,16 @@ import { Heart, Wallet, HeartHandshake, Sprout, Gift, ArrowRight, CheckCircle2 }
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function CategoryGrid({ setActivePage }: { setActivePage: (page: string) => void }) {
-  const [activeTab, setActiveTab] = useState('donasi');
+  const [activeTab, setActiveTab] = useState('infak');
 
   const categories = [
     { 
-      id: 'donasi', 
+      id: 'infak', 
       icon: Heart, 
       label: 'Infak Santri', 
-      actionPage: 'programs',
-      description: 'Salurkan infak dan sedekah untuk pemenuhan pangan harian santri serta beasiswa tahfidz dhuafa.',
-      purpose: 'Beras & dapur santri, santunan santri yatim, dan bisyarah para guru ngaji.',
+      actionPage: 'infak',
+      description: 'Salurkan infak untuk pemenuhan pangan harian santri, operasional dakwah, serta kafalah para asatidz.',
+      purpose: 'Beras & dapur santri, operasional pondok, santunan santri yatim, dan bisyarah para guru ngaji.',
       proofStat: '1.250+ Santri Dhuafa Terbantu',
       proofImage: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800&q=80'
     },
@@ -25,6 +25,16 @@ export default function CategoryGrid({ setActivePage }: { setActivePage: (page: 
       purpose: 'Disalurkan khusus kepada 8 Asnaf mustahik dan santri fisabilillah sesuai syariat Islam.',
       proofStat: 'Rp 12,4 Miliar Zakat Tersalurkan',
       proofImage: 'https://images.unsplash.com/photo-1564121211835-e88c852648ab?auto=format&fit=crop&w=800&q=80'
+    },
+    { 
+      id: 'sedekah', 
+      icon: HeartHandshake, 
+      label: 'Sedekah Subuh', 
+      actionPage: 'sedekah',
+      description: 'Amalan harian pembuka rezeki dan penolak bala melalui sedekah subuh, nasi berkah santri, dan air bersih.',
+      purpose: 'Sedekah subuh didoakan langsung oleh santri penghafal Al-Qur’an dan dibagikan dalam aksi sosial harian.',
+      proofStat: '5.400+ Doa Sedekah Subuh Terhimpun',
+      proofImage: 'https://images.unsplash.com/photo-1593113565214-80afcb4dd16c?auto=format&fit=crop&w=800&q=80'
     },
     { 
       id: 'wakaf', 
@@ -45,16 +55,6 @@ export default function CategoryGrid({ setActivePage }: { setActivePage: (page: 
       purpose: 'Penyembelihan syar’i dan distribusi daging qurban untuk ribuan santri dan warga sekitar.',
       proofStat: '850+ Hewan Qurban Terdistribusi',
       proofImage: 'https://images.unsplash.com/photo-1628189686445-568853b0e3dd?auto=format&fit=crop&w=800&q=80'
-    },
-    { 
-      id: 'galang-dana', 
-      icon: HeartHandshake, 
-      label: 'Galang Dana', 
-      actionPage: 'galang-dana',
-      description: 'Inisiasi gerakan kebaikan mandiri untuk program dakwah, bantuan darurat santri, dan sosial kemanusiaan.',
-      purpose: 'Penggalangan dana terverifikasi untuk tanggap medis santri dan program kebaikan yayasan.',
-      proofStat: '120+ Program Terverifikasi',
-      proofImage: 'https://images.unsplash.com/photo-1593113565214-80afcb4dd16c?auto=format&fit=crop&w=800&q=80'
     },
   ];
 

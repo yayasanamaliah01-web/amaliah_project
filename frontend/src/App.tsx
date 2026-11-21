@@ -12,6 +12,8 @@ import HomePage from './pages/Home';
 import DashboardPage from './pages/Dashboard';
 import ProfilePage from './pages/Profile';
 import ProgramsPage from './pages/Programs';
+import InfakPage from './pages/Infak';
+import SedekahPage from './pages/Sedekah';
 import ZakatPage from './pages/Zakat';
 import WakafPage from './pages/Wakaf';
 import QurbanPage from './pages/Qurban';
@@ -98,10 +100,12 @@ export default function App() {
     const routeMap: Record<string, string> = {
       home: '/',
       dashboard: '/dashboard',
+      infak: '/infak',
+      zakat: '/zakat',
+      sedekah: '/sedekah',
+      wakaf: '/wakaf',
       programs: '/programs',
       'program-detail': selectedProgramId ? `/programs/${selectedProgramId}` : '/programs',
-      zakat: '/zakat',
-      wakaf: '/wakaf',
       qurban: '/qurban',
       'galang-dana': '/galang-dana',
       impact: '/impact',
@@ -185,7 +189,6 @@ export default function App() {
   const hideGlobalHeader = [
     '/advisor',
     '/zakat',
-    '/wakaf',
     '/qurban',
     '/galang-dana',
     '/articles',
@@ -198,7 +201,6 @@ export default function App() {
   const hideBottomNav = [
     '/advisor',
     '/zakat',
-    '/wakaf',
     '/qurban',
     '/galang-dana',
     '/pembayaran',
@@ -242,6 +244,9 @@ export default function App() {
               )
             }
           />
+          <Route path="/infak" element={<InfakPage openCheckout={openCheckout} onBack={() => navigate('/')} />} />
+          <Route path="/sedekah" element={<SedekahPage openCheckout={openCheckout} onBack={() => navigate('/')} />} />
+          <Route path="/wakaf" element={<WakafPage openCheckout={openCheckout} onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/programs" element={<ProgramsPage onSelectProgram={handleSelectProgram} onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/programs/:id" element={<ProgramDetailRoute openCheckout={openCheckout} />} />
           <Route path="/zakat" element={<ZakatPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} openCheckout={openCheckout} />} />
@@ -263,7 +268,6 @@ export default function App() {
             }
           />
           <Route path="/pembayaran/:transactionId" element={<InstruksiPembayaranPage />} />
-          <Route path="/wakaf" element={<WakafPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/qurban" element={<QurbanPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/galang-dana" element={<GalangDanaPage onBack={() => navigate(isLoggedIn ? '/dashboard' : '/')} />} />
           <Route path="/impact" element={<ImpactPage onSelectImpact={handleSelectImpact} />} />
@@ -285,7 +289,7 @@ export default function App() {
         </Routes>
       </main>
 
-      {pathname === '/' && <Footer />}
+      {['/', '/infak', '/sedekah', '/wakaf'].includes(pathname) && <Footer />}
       {isLoggedIn && !hideBottomNav && (
         <MobileDock />
       )}

@@ -87,9 +87,52 @@ export default function AdminProgram() {
   }, [disbursements]);
   const remainingBalance = Math.max(0, totalInflow - totalOutflow);
 
-  // Filtered campaigns list
+  // Perhitungan statistik per 4 Pilar Utama (Infak, Zakat, Sedekah, Wakaf)
+  const pillarStats = useMemo(() => {
+    const stats = {
+      infak: { count: 0, collected: 0 },
+      zakat: { count: 0, collected: 0 },
+      sedekah: { count: 0, collected: 0 },
+      wakaf: { count: 0, collected: 0 },
+    };
+    campaigns.forEach((c) => {
+      const cat = (c.category || '').toLowerCase();
+      const col = c.currentAmount || c.collectedAmount || 0;
+      if (cat.includes('zakat')) {
+        stats.zakat.count++;
+        stats.zakat.collected += col;
+      } else if (cat.includes('sedekah')) {
+        stats.sedekah.count++;
+        stats.sedekah.collected += col;
+      } else if (cat.includes('wakaf')) {
+        stats.wakaf.count++;
+        stats.wakaf.collected += col;
+      } else {
+        // Default / Infak
+        stats.infak.count++;
+        stats.infak.collected += col;
+      }
+    });
+    return stats;
+  }, [campaigns]);
+
+  // Filtered campaigns list with 4 pillars support
   const filteredCampaigns = campaigns.filter((c) => {
-    const matchCat = categoryFilter === 'Semua' || c.category === categoryFilter;
+    let matchCat = categoryFilter === 'Semua';
+    if (!matchCat) {
+      const cat = (c.category || '').toLowerCase();
+      if (categoryFilter === 'Infak') {
+        matchCat = cat.includes('infaq') || cat.includes('infak') || (!cat.includes('zakat') && !cat.includes('sedekah') && !cat.includes('wakaf'));
+      } else if (categoryFilter === 'Zakat') {
+        matchCat = cat.includes('zakat');
+      } else if (categoryFilter === 'Sedekah') {
+        matchCat = cat.includes('sedekah');
+      } else if (categoryFilter === 'Wakaf') {
+        matchCat = cat.includes('wakaf');
+      } else {
+        matchCat = c.category === categoryFilter;
+      }
+    }
     const matchQuery =
       c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -261,12 +304,14 @@ export default function AdminProgram() {
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 >
+                  <option value="Infak Santri & Dakwah">Infak Santri & Dakwah</option>
                   <option value="Infaq Terikat">Infaq Terikat</option>
                   <option value="Infaq Tidak Terikat">Infaq Tidak Terikat</option>
-                  <option value="Zakat">Zakat Maal / Fitrah</option>
-                  <option value="Wakaf Uang">Wakaf Uang</option>
-                  <option value="Kemanusiaan">Bencana & Kemanusiaan</option>
-                  <option value="Pendidikan">Beasiswa & Pendidikan</option>
+                  <option value="Zakat Maal / Fitrah">Zakat Maal / Fitrah</option>
+                  <option value="Sedekah Subuh & Harian">Sedekah Subuh & Harian</option>
+                  <option value="Wakaf Uang & Sarana">Wakaf Uang & Sarana</option>
+                  <option value="Bencana & Kemanusiaan">Bencana & Kemanusiaan</option>
+                  <option value="Beasiswa & Pendidikan">Beasiswa & Pendidikan</option>
                 </select>
               </div>
 
@@ -747,24 +792,119 @@ export default function AdminProgram() {
         </div>
       </div>
 
+      {/* 4 Pilar Utama Ringkasan Aset & Program */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {/* Infak Card */}
+        <div
+          onClick={() => setCategoryFilter('Infak')}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+            categoryFilter === 'Infak'
+              ? 'bg-emerald-50/80 border-emerald-500 shadow-sm ring-1 ring-emerald-500'
+              : 'bg-white border-slate-200 hover:border-emerald-300'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pilar Infak</span>
+            <span className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">
+              {pillarStats.infak.count}
+            </span>
+          </div>
+          <div className="text-lg font-black text-slate-900 leading-tight">
+            Rp {pillarStats.infak.collected.toLocaleString('id-ID')}
+          </div>
+          <span className="text-[10px] text-emerald-700 font-semibold mt-1 inline-block">
+            Santri, Pangan & Dakwah
+          </span>
+        </div>
+
+        {/* Zakat Card */}
+        <div
+          onClick={() => setCategoryFilter('Zakat')}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+            categoryFilter === 'Zakat'
+              ? 'bg-blue-50/80 border-blue-500 shadow-sm ring-1 ring-blue-500'
+              : 'bg-white border-slate-200 hover:border-blue-300'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pilar Zakat</span>
+            <span className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center">
+              {pillarStats.zakat.count}
+            </span>
+          </div>
+          <div className="text-lg font-black text-slate-900 leading-tight">
+            Rp {pillarStats.zakat.collected.toLocaleString('id-ID')}
+          </div>
+          <span className="text-[10px] text-blue-700 font-semibold mt-1 inline-block">
+            Maal, Profesi & Fitrah
+          </span>
+        </div>
+
+        {/* Sedekah Card */}
+        <div
+          onClick={() => setCategoryFilter('Sedekah')}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+            categoryFilter === 'Sedekah'
+              ? 'bg-amber-50/80 border-amber-500 shadow-sm ring-1 ring-amber-500'
+              : 'bg-white border-slate-200 hover:border-amber-300'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pilar Sedekah</span>
+            <span className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center">
+              {pillarStats.sedekah.count}
+            </span>
+          </div>
+          <div className="text-lg font-black text-slate-900 leading-tight">
+            Rp {pillarStats.sedekah.collected.toLocaleString('id-ID')}
+          </div>
+          <span className="text-[10px] text-amber-700 font-semibold mt-1 inline-block">
+            Subuh Berkah & Rutin
+          </span>
+        </div>
+
+        {/* Wakaf Card */}
+        <div
+          onClick={() => setCategoryFilter('Wakaf')}
+          className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+            categoryFilter === 'Wakaf'
+              ? 'bg-teal-50/80 border-teal-500 shadow-sm ring-1 ring-teal-500'
+              : 'bg-white border-slate-200 hover:border-teal-300'
+          }`}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Pilar Wakaf</span>
+            <span className="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 font-bold text-xs flex items-center justify-center">
+              {pillarStats.wakaf.count}
+            </span>
+          </div>
+          <div className="text-lg font-black text-slate-900 leading-tight">
+            Rp {pillarStats.wakaf.collected.toLocaleString('id-ID')}
+          </div>
+          <span className="text-[10px] text-teal-700 font-semibold mt-1 inline-block">
+            Uang, Lahan & Gedung
+          </span>
+        </div>
+      </div>
+
       {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
           <input
             type="text"
-            placeholder="Cari program, kategori, atau lokasi..."
+            placeholder="Cari tema donasi, kategori, atau lokasi..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {['Semua', 'Infaq Terikat', 'Infaq Tidak Terikat', 'Zakat', 'Wakaf Uang', 'Kemanusiaan'].map((cat) => (
+          {['Semua', 'Infak', 'Zakat', 'Sedekah', 'Wakaf'].map((cat) => (
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`px-3 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${
                 categoryFilter === cat
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'

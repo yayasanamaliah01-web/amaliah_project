@@ -61,7 +61,7 @@ export default function Header({
             <Search className="w-4 h-4 absolute left-3.5 text-slate-400" />
             <input
               type="text"
-              placeholder="Cari program donasi atau zakat..."
+              placeholder="Cari infak, zakat, sedekah, wakaf..."
               className="w-full h-full pl-10 pr-4 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-full text-sm focus:border-emerald-500 focus:bg-white outline-none transition-colors"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -71,16 +71,22 @@ export default function Header({
             />
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-6 flex-shrink-0">
+          {/* Desktop Nav - 4 Pilar Utama: Infak, Zakat, Sedekah, Wakaf */}
+          <nav className="hidden md:flex items-center gap-5 lg:gap-6 flex-shrink-0">
             <NavLink to="/" className={navLinkStyle} end>
               Beranda
             </NavLink>
-            <NavLink to="/programs" className={navLinkStyle}>
-              Donasi
+            <NavLink to="/infak" className={navLinkStyle}>
+              Infak
             </NavLink>
             <NavLink to="/zakat" className={navLinkStyle}>
               Zakat
+            </NavLink>
+            <NavLink to="/sedekah" className={navLinkStyle}>
+              Sedekah
+            </NavLink>
+            <NavLink to="/wakaf" className={navLinkStyle}>
+              Wakaf
             </NavLink>
             <NavLink to="/advisor" className={navLinkStyle}>
               Konsultasi
