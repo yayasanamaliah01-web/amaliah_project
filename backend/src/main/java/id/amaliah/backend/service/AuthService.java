@@ -47,11 +47,25 @@ public class AuthService {
     private String googleClientSecret;
 
     public String getGoogleClientId() {
-        return googleClientId;
+        if (StringUtils.hasText(googleClientId)) {
+            return googleClientId.trim();
+        }
+        String envId = System.getenv("GOOGLE_CLIENT_ID");
+        if (StringUtils.hasText(envId)) {
+            return envId.trim();
+        }
+        return "";
     }
 
     private String getEffectiveGoogleClientSecret() {
-        return googleClientSecret;
+        if (StringUtils.hasText(googleClientSecret)) {
+            return googleClientSecret.trim();
+        }
+        String envSecret = System.getenv("GOOGLE_CLIENT_SECRET");
+        if (StringUtils.hasText(envSecret)) {
+            return envSecret.trim();
+        }
+        return "";
     }
 
     @Transactional
@@ -193,14 +207,22 @@ public class AuthService {
     }
 
     private String exchangeGoogleCodeForIdToken(String code, String redirectUri) {
+        String clientId = getGoogleClientId();
+        String clientSecret = getEffectiveGoogleClientSecret();
+
+        if (!StringUtils.hasText(clientId) || !StringUtils.hasText(clientSecret)) {
+            log.error("Google OAuth Client ID atau Client Secret belum dikonfigurasi di backend");
+            throw new BadRequestException("Google OAuth Client ID atau Secret belum dikonfigurasi di backend. Pastikan file application-local.properties atau GOOGLE_CLIENT_ID & GOOGLE_CLIENT_SECRET terisi.");
+        }
+
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
             body.add("code", code);
-            body.add("client_id", getGoogleClientId());
-            body.add("client_secret", getEffectiveGoogleClientSecret());
+            body.add("client_id", clientId);
+            body.add("client_secret", clientSecret);
             body.add("redirect_uri", StringUtils.hasText(redirectUri) ? redirectUri : "https://amaliah.my.id/auth/google/callback");
             body.add("grant_type", "authorization_code");
 

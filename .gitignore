@@ -21,6 +21,8 @@ frontend/coverage/
 .env*
 !.env.example
 *.csv
+application-local.properties
+**/application-local.properties
 
 # Logs & temp files
 *.log
