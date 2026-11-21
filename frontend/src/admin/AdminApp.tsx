@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminPenerimaan from './pages/AdminPenerimaan';
 import AdminPenyaluran from './pages/AdminPenyaluran';
@@ -166,23 +166,37 @@ export default function AdminApp({ onExitAdmin }: { onExitAdmin?: () => void }) 
 
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto">
-          <Routes>
-            <Route index element={<AdminDashboard />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="chat" element={<AdminChat />} />
-            <Route path="penerimaan" element={<AdminPenerimaan />} />
-            <Route path="penyaluran" element={<AdminPenyaluran />} />
-            <Route path="program" element={<AdminProgram />} />
-            <Route path="mustahik" element={<AdminMustahik />} />
-            <Route path="kas" element={<AdminKas />} />
-            <Route path="wakaf" element={<AdminWakaf />} />
-            <Route path="honor" element={<AdminHonor />} />
-            <Route path="pengadaan" element={<AdminPengadaan />} />
-            <Route path="artikel" element={<AdminArtikel />} />
-            <Route path="laporan" element={<AdminLaporan />} />
-            <Route path="pengaturan" element={<AdminPengaturan />} />
-            <Route path="*" element={<Navigate to="/admin" replace />} />
-          </Routes>
+          {(() => {
+            switch (activeAdminPage) {
+              case 'chat':
+                return <AdminChat />;
+              case 'penerimaan':
+                return <AdminPenerimaan />;
+              case 'penyaluran':
+                return <AdminPenyaluran />;
+              case 'program':
+                return <AdminProgram />;
+              case 'mustahik':
+                return <AdminMustahik />;
+              case 'kas':
+                return <AdminKas />;
+              case 'wakaf':
+                return <AdminWakaf />;
+              case 'honor':
+                return <AdminHonor />;
+              case 'pengadaan':
+                return <AdminPengadaan />;
+              case 'artikel':
+                return <AdminArtikel />;
+              case 'laporan':
+                return <AdminLaporan />;
+              case 'pengaturan':
+                return <AdminPengaturan />;
+              case 'dashboard':
+              default:
+                return <AdminDashboard />;
+            }
+          })()}
         </div>
       </main>
     </div>
