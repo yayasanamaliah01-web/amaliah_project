@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Search, Plus, Filter, Download, FileText, CheckCircle2, ArrowLeft, Printer, User, Wallet, Save } from 'lucide-react';
 
 export default function AdminPenerimaan() {
