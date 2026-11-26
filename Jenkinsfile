@@ -60,6 +60,7 @@ pipeline {
                     docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i bash -c "
                         set -e
                         echo '1. Updating local working copy...'
+                        git config --global --add safe.directory /opt/amaliah_project
                         cd /opt/amaliah_project
                         git pull origin main
                         chmod +x infra/garage/init-garage.sh
