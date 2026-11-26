@@ -18,3 +18,6 @@ RUN apt-get update -qq \
 RUN groupadd -for -g 988 docker && usermod -aG docker jenkins
 
 USER jenkins
+
+# Pre-install Pipeline, Git, GitHub, JUnit, and Workspace Cleanup plugins
+RUN jenkins-plugin-cli --plugins git github workflow-aggregator junit ws-cleanup
