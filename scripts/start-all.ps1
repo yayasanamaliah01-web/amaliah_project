@@ -3,7 +3,7 @@ Write-Host "========================================================" -Foregroun
 Write-Host "  MENJALANKAN AMALIAH SEMARANG INFAK (XENDIT ENABLED)" -ForegroundColor Cyan
 Write-Host "========================================================" -ForegroundColor Cyan
 
-$root = $PSScriptRoot
+$root = Split-Path -Parent $PSScriptRoot
 
 Write-Host "`n[1/2] Menjalankan Backend Amaliah (Port 8081)..." -ForegroundColor Yellow
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$root\backend'; .\mvnw.cmd spring-boot:run"

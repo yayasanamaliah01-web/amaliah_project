@@ -200,7 +200,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
   }, [mutations, periodFilter]);
 
   return (
-    <div className="p-5 sm:p-6 bg-slate-50 min-h-full">
+    <div className="min-h-full">
       {/* Header & Bank Sync Bar */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
         <div>
@@ -223,7 +223,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
             <button
               onClick={() => setPeriodFilter('ALL')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
-                periodFilter === 'ALL' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                periodFilter === 'ALL' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Semua
@@ -231,7 +231,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
             <button
               onClick={() => setPeriodFilter('MONTH')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
-                periodFilter === 'MONTH' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                periodFilter === 'MONTH' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Bulan Ini
@@ -239,7 +239,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
             <button
               onClick={() => setPeriodFilter('TODAY')}
               className={`px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${
-                periodFilter === 'TODAY' ? 'bg-slate-900 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                periodFilter === 'TODAY' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Hari Ini
@@ -256,7 +256,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
           {/* Export CSV Button */}
           <button
             onClick={handleExportCsv}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-colors shadow-xs cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             title="Download Rekap Data CSV"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -267,7 +267,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
           <button
             onClick={handleTriggerBankSync}
             disabled={isSyncing}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold transition-colors shadow-xs cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Menyinkronkan...' : 'Sinkronkan Bank'}
@@ -309,7 +309,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
 
       {/* 4 Core Financial Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 mb-6">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 hover:shadow-xs transition-shadow">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-colors">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">Saldo Kas Bank Terverifikasi</span>
             <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -333,7 +333,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 hover:shadow-xs transition-shadow">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-colors">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">Total Donasi Masuk</span>
             <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
@@ -354,7 +354,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 hover:shadow-xs transition-shadow">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-colors">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">Total Penyaluran Keluar</span>
             <div className="p-1.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-100">
@@ -375,7 +375,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/80 hover:shadow-xs transition-shadow">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-slate-300 transition-colors">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-medium text-slate-500">LPJ & Akuntabilitas</span>
             <div className="p-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100">
@@ -424,7 +424,7 @@ export default function AdminDashboard({ onNavigate }: { onNavigate?: (page: str
               <div
                 key={cat.id}
                 onClick={() => goToPage('program')}
-                className="bg-white p-4 rounded-2xl border border-slate-200/80 hover:border-emerald-400 hover:shadow-xs transition-all cursor-pointer group"
+                className="bg-white p-4 rounded-2xl border border-slate-200/90 hover:border-emerald-400 transition-colors cursor-pointer group"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold text-slate-800 group-hover:text-emerald-700 transition-colors truncate">
